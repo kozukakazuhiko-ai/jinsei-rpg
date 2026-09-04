@@ -1,0 +1,1 @@
+import type {CapacitorConfig} from '@capacitor/cli'; const config:CapacitorConfig={appId:'jp.jinseirpg.app',appName:'人生はRPG',webDir:'dist'}; export default config;
