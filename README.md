@@ -1,17 +1,22 @@
-# 人生はRPG — Mobile MVP
+# 人生はRPG v2.4.1
 
-最終成果物をスマートフォンアプリ（Android / iOS）とする個人用MVP。テスト段階では一般公開・配信せず個人利用で検証する。
+v2.4.0を動作確認済み基準版として、既存のlocalStorageキーを維持したまま安全性・整合性を中心に整理した保守版。
 
-## Stack
-React + TypeScript + Vite + Capacitor + SQLite + Zod + date-fns
+## 今回の変更
+- 保存キーは `jinseiRPG_v2_4` のまま維持（既存データ互換）
+- 日付判定をUTC依存から端末のローカル日付へ修正（日本時間のDailyずれ防止）
+- Character入力項目のマッピングを定数化して重複コードを削減
+- HomeのDaily Quest検索で同じ配列を2回filterしないよう整理
+- 放棄済みQuestを未完了Questとして誤表示しないよう整理
+- 放棄済みQuestをチェック操作で勝手に復活・完了できないよう防止
+- Questの種類変更時にDaily/Season/Main固有の日付情報を整合化
+- Daily Questの「今日にコピー」で仕様外の期限をコピーしないよう修正
+- Quest編集・追加処理を整理
+- Versionを2.4.1へ更新（保存キーは変更しない）
 
-## Next
-1. SQLite初期化
-2. Repository / Service
-3. Character
-4. Quest
-5. EXP / Level
-6. WantToDo
-7. Home
-8. Save / JSON backup
-9. Android実機テスト
+## 確認
+- JavaScript構文チェック: OK
+- v2.4.0保存キー維持: OK
+- 主要DOM参照の静的確認: OK
+
+※この環境では実ブラウザの対話型E2Eテストを完遂できないため、ユーザー側での実機確認を最終確認とする。
