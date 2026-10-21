@@ -1,0 +1,723 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>人生はRPG | 4.8.22-dev</title><link rel="manifest" href="./manifest.webmanifest"><meta name="theme-color" content="#111827"><meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif;background:#111827;color:#f9fafb}*{box-sizing:border-box}body{margin:0;max-width:700px;margin-inline:auto;padding:16px 16px 95px}h1{font-size:1.45rem}h2{font-size:1.15rem}p{line-height:1.6;color:#cbd5e1}.panel{background:#1f2937;border:1px solid #374151;border-radius:14px;padding:16px;margin:12px 0}button,input,select,textarea{font:inherit}button{cursor:pointer;border:0;border-radius:10px;padding:11px 13px;background:#60a5fa;color:#0b1220;font-weight:700}button:disabled{opacity:.45;cursor:not-allowed}button.secondary{background:#374151;color:#fff}button.danger{background:#fca5a5}input,textarea,select{width:100%;background:#111827;color:white;border:1px solid #64748b;border-radius:9px;padding:12px;margin:5px 0 12px}label{display:block;font-size:.9rem}nav{position:fixed;bottom:0;left:0;right:0;background:#111827;border-top:1px solid #374151;display:flex;justify-content:center;gap:5px;padding:9px}nav button{font-size:.73rem;padding:10px 5px;min-width:0;flex:1}nav{gap:3px;padding:8px 4px}section[hidden]{display:none}.notice{border-left:4px solid #fbbf24;padding:10px;background:#292524}.item{padding:10px 0;border-bottom:1px solid #374151}.actions{display:flex;gap:8px;flex-wrap:wrap}small{color:#cbd5e1}#message{min-height:1.5em;color:#fde68a}dialog{width:min(94vw,540px);max-height:88dvh;overflow:auto;border:1px solid #64748b;border-radius:16px;background:#1f2937;color:white;padding:20px}dialog::backdrop{background:#000b}.dialog-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}dialog h2{margin-top:0}
+
+.exp-track{height:16px;background:#111827;border:1px solid #64748b;border-radius:999px;overflow:hidden}.exp-fill{height:100%;width:0;background:linear-gradient(90deg,#60a5fa,#fbbf24);transition:width .45s ease}.reward-toast[hidden]{display:none!important}.reward-toast{position:fixed;z-index:20;left:50%;top:18%;transform:translateX(-50%);width:min(90vw,360px);padding:18px;background:#1f2937;border:2px solid #fbbf24;border-radius:16px;text-align:center;box-shadow:0 12px 36px #0009}.reward-toast.level-up{border-color:#93c5fd;background:linear-gradient(150deg,#1e3a5f,#1f2937)}.reward-toast.hard-clear{border-color:#fb923c}.reward-toast strong{display:block;font-size:1.35rem;color:#fde68a}.reward-toast p{margin:6px 0}.reward-toast button{margin-top:8px}@media(prefers-reduced-motion:reduce){.exp-fill{transition:none}}
+
+.journey-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.journey-tile{background:#111827;border:1px solid #475569;border-radius:12px;padding:12px}.journey-tile strong{display:block;font-size:1.5rem;color:#fde68a}.journey-tile span{font-size:.82rem;color:#cbd5e1}.journey-caption{margin-bottom:4px}.journey-empty{color:#cbd5e1}.reward-toast:focus{outline:3px solid #93c5fd}@media(max-width:360px){.journey-grid{grid-template-columns:1fr}}
+
+.hero-panel{border-color:#4b6485;background:linear-gradient(150deg,#243550,#1f2937 75%)}.hero-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.hero-head h2{font-size:1.65rem;margin:4px 0 12px}.hero-head strong{color:#fde68a}.quick-capture{display:flex;gap:8px;align-items:flex-start}.quick-capture input{min-width:0;flex:1}.quick-capture button{flex-shrink:0;margin-top:5px}.reward-spark{font-size:2rem;color:#fbbf24;letter-spacing:.4em;animation:shine .7s ease-out}.reward-toast:not([hidden]){animation:rewardIn .25s ease-out}@keyframes shine{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}@keyframes rewardIn{from{opacity:0;transform:translate(-50%,-10px)}to{opacity:1;transform:translate(-50%,0)}}@media(prefers-reduced-motion:reduce){.reward-spark,.reward-toast:not([hidden]){animation:none}}.quick-quest{padding:12px;border:1px solid #475569;border-radius:12px;background:#111827}.quick-quest-title{font-weight:750;font-size:1.08rem;color:#fff}.quick-quest-meta{font-size:.84rem;color:#cbd5e1}.quick-quest .actions{margin-top:12px}.quest-filter-row{display:flex;gap:8px;flex-wrap:wrap}.quest-filter-row button[aria-pressed="true"]{background:#fbbf24;color:#111827}[hidden]{display:none!important}.daily-more{width:100%;margin-top:12px;min-height:48px}.daily-item{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid #475569;padding:10px 0}.daily-item button{flex-shrink:0}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+ .milestone-panel{border-color:#80662e;background:linear-gradient(145deg,#332d22,#1f2937)}.milestone-title{color:#fde68a;font-weight:800;font-size:1.1rem}.milestone-sub{font-size:.88rem}.today-summary{display:flex;gap:8px;flex-wrap:wrap}.today-summary span{background:#111827;border:1px solid #475569;border-radius:999px;padding:7px 10px;font-size:.82rem;color:#e2e8f0} .linked-progress{font-size:.84rem;color:#93c5fd;margin:6px 0}.month-heading{font-size:1rem;color:#fde68a;margin:20px 0 4px;border-bottom:1px solid #475569;padding-bottom:5px}.empty-note{color:#cbd5e1} 
+.achievement-panel{margin:18px 0;padding:14px;border:1px solid #64748b;border-radius:14px;background:#172235}.achievement-panel h3{margin:0 0 8px;color:#fde68a}.achievement-note{font-size:.86rem;color:#cbd5e1}.achievement-list{display:grid;gap:9px}.achievement-card{border:1px solid #475569;border-radius:10px;padding:10px;background:#0f172a}.achievement-card strong{display:block;color:#fef3c7}.achievement-card span{display:block;color:#cbd5e1;font-size:.85rem;margin-top:3px}.achievement-card.locked{opacity:.65}.achievement-card.locked strong{color:#cbd5e1}
+
+.character-hero{display:flex;align-items:center;gap:16px;padding:16px;border-radius:14px;background:linear-gradient(135deg,#263957,#182235);border:1px solid #536a87;margin-bottom:14px}
+.character-avatar{width:100px;height:145px;flex-shrink:0;display:grid;place-items:center;border-radius:18px;background:#0f172a;border:2px solid #eabf68;font-size:2.5rem}
+.character-identity{min-width:0}.character-identity strong{display:block;font-size:1.2rem;overflow-wrap:anywhere}.character-identity span{color:#fcd98a;font-size:.88rem}.character-identity p{font-size:.84rem;margin:5px 0 0}
+.achievement-progress{margin:8px 0 14px}.achievement-progress strong{color:#fde68a}.achievement-card .mini-track{height:7px;background:#334155;border-radius:99px;overflow:hidden;margin-top:8px}.achievement-card .mini-fill{height:100%;background:#fbbf24;border-radius:99px}
+.achievement-card .progress-label{font-size:.8rem;color:#a8c9ee}.achievement-card.locked{opacity:.88}
+@media(max-width:360px){.character-hero{gap:10px}.character-avatar{width:80px;height:115px;font-size:2rem}}
+.map-goal{margin-bottom:14px}.map-goal progress{accent-color:#62a889}.map-next{margin:10px 0;padding:10px;border:1px solid var(--accent,#7698ff);border-radius:8px}.map-path{position:relative;display:grid;gap:0;margin:12px 0 8px;padding:0 0 0 2px;list-style:none}
+.map-node{position:relative;display:flex;align-items:center;gap:10px;margin:0 0 0 15px;padding:11px 8px 11px 19px;border:0;border-left:3px solid var(--accent,#7698ff);border-radius:0;background:transparent}
+.map-node:last-child{border-left-color:transparent}
+.map-marker{position:absolute;left:-15px;top:10px;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;border:2px solid var(--accent,#7698ff);background:var(--panel,#242a35);color:inherit;font-size:12px;font-weight:bold}
+.map-node-completed .map-marker{background:#27684a;color:white;border-color:#398a62}
+.map-node-in_progress .map-marker{border-color:#d39c35}
+.map-node-on_hold{opacity:.75}
+.map-label{flex:1;overflow-wrap:anywhere;min-width:0}
+.map-node button{flex-shrink:0}
+.map-milestone{font-weight:600;margin:12px 0}
+.map-empty{padding:12px;list-style:none}
+@media(max-width:420px){.map-node{gap:6px;padding-right:0}.map-node button{padding:7px 9px}}
+
+.starter-panel{padding:12px;margin:12px 0;border:1px solid var(--accent,#7698ff);border-radius:12px}
+.starter-panel h3{margin:0 0 8px}.starter-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:8px;margin:10px 0}.starter-choices button{white-space:normal;text-align:left;min-height:52px}
+.reward-next{margin:10px 0;padding:10px;border:1px solid currentColor;border-radius:10px}.reward-next p{margin:0 0 8px}
+.monthly-review{margin-top:14px;padding:12px;border:1px solid #64748b;border-radius:12px}.monthly-review p{margin:8px 0}
+.map-empty{color:#dbeafe;font-weight:600;line-height:1.6}.map-goal>.actions{margin-top:10px}
+.weekly-activity{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px;align-items:end;margin:14px 0 8px}.weekly-day{min-width:0;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:12px;color:var(--muted,#94a3b8)}.weekly-day strong{font-size:13px;color:var(--text,#f8fafc)}.weekly-track{height:62px;width:100%;max-width:35px;border-radius:7px;background:rgba(148,163,184,.12);display:flex;align-items:flex-end;overflow:hidden}.weekly-bar{width:100%;min-height:0;border-radius:6px 6px 0 0;background:#60a5fa}.weekly-day span{white-space:nowrap;font-size:11px}
+.home-optional>summary{cursor:pointer;font-weight:700;padding:5px 0;list-style-position:inside}.home-optional[open]>div.panel{margin-top:12px}.home-optional>.panel{box-shadow:none;margin:12px 0 0;padding:0;background:transparent;border:0}
+.character-avatar svg{width:100%;height:100%;display:block}.avatar-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.avatar-controls label{display:block}.avatar-controls select{width:100%}.avatar-settings{margin-top:12px}
+/* Quick add: clear keyboard focus and readable help. */
+#quickCaptureHint{display:block;line-height:1.5;margin-top:5px;color:#cbd5e1}
+/* Daily quest empty state and readability */
+.daily-empty{border:1px dashed #64748b;border-radius:12px;padding:14px;background:#172235}.daily-empty p{margin-top:0}.daily-item{align-items:flex-start;flex-wrap:wrap}.daily-item>span{flex:1 1 180px;overflow-wrap:anywhere}.daily-item .actions{flex:1 1 190px;justify-content:flex-end}.daily-item .actions button{min-height:44px}@media(max-width:440px){.daily-item .actions{justify-content:stretch}.daily-item .actions button{flex:1 1 130px}}
+/* Daily Quest completion: only today's completions count, no streak penalty. */
+.daily-progress{height:9px;background:#111827;border-radius:999px;overflow:hidden;margin:6px 0 15px;border:1px solid #374151}.daily-progress[hidden]{display:none}.daily-progress-fill{height:100%;width:0;background:linear-gradient(90deg,#60a5fa,#34d399);transition:width .2s ease}@media(prefers-reduced-motion:reduce){.daily-progress-fill{transition:none}}
+/* Mobile-first navigation and accessibility */
+body{padding-bottom:calc(100px + env(safe-area-inset-bottom,0px))}
+nav[aria-label="メインメニュー"]{justify-content:flex-start;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;max-width:700px;margin-inline:auto;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));gap:6px;z-index:20}
+nav[aria-label="メインメニュー"] button{flex:0 0 auto;min-width:94px;min-height:48px;font-size:.83rem;background:#263449;color:#e5e7eb}
+nav[aria-label="メインメニュー"] button[aria-current="page"]{background:#60a5fa;color:#0b1220;box-shadow:inset 0 -3px 0 #fbbf24}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid #fbbf24;outline-offset:3px}
+.skip-link{position:absolute;top:-90px;left:12px;z-index:50;background:#fbbf24;color:#111827;padding:12px;border-radius:8px}
+.skip-link:focus{top:12px}
+@media(min-width:700px){nav[aria-label="メインメニュー"]{left:50%;right:auto;width:700px;transform:translateX(-50%)}}
+/* Switch between actionable quests without opening the full quest list. */
+.home-quest-choices{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.home-quest-choices p{flex-basis:100%;margin:0}
+.home-quest-choice{min-height:44px;max-width:100%;overflow-wrap:anywhere;text-align:left}
+.home-quest-choice[aria-pressed="true"]{background:#fbbf24;color:#111827}
+.reward-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}.reward-actions button{min-height:48px}
+/* Progressive disclosure: keep the primary daily action visible without removing insights. */
+.home-insights{margin-top:12px}.home-insights>summary{cursor:pointer;min-height:48px;display:flex;align-items:center;font-weight:750;color:#dbeafe;list-style-position:inside}.home-insights>summary::marker{color:#fbbf24}.home-insights[open]>summary{margin-bottom:10px}.home-insights:focus-within{border-color:#93c5fd}
+@media(prefers-reduced-motion:reduce){.exp-fill{transition:none}}
+.collection-panel .item{margin:.45rem 0}.collection-panel button{margin-top:.35rem}</style></head><body><a class="skip-link" href="#home">本文へ移動</a>
+<header><h1>人生はRPG <small>4.8.22-dev</small></h1><p>今いる場所が、世界のすべてではない。</p><div id="message" role="status" aria-live="polite"></div></header>
+<section id="home"><h2>Home</h2><div class="panel hero-panel"><div class="hero-head"><div><small>あなたの冒険</small><h2 id="homeLevel">Level 1</h2></div><strong id="homeExp">0 EXP</strong></div><div class="exp-track" role="progressbar" aria-label="次のレベルまでの進捗" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="homeExpTrack"><div id="homeExpFill" class="exp-fill"></div></div><p id="homeProgressText" class="quick-quest-meta"></p><label for="quickCapture">現実でやるべきことをQuestにする</label><div class="quick-capture"><input id="quickCapture" maxlength="140" aria-describedby="quickCaptureHint" placeholder="例：本を5分読む" autocomplete="off"><button id="quickCaptureAdd" type="button">追加</button></div><label for="quickCaptureSkill">行動の分野（任意・成長の方向に反映）</label><select id="quickCaptureSkill"><option>未設定</option><option>学習</option><option>健康</option><option>仕事</option><option>創作</option><option>生活</option><option>人間関係</option><option>挑戦</option></select><small id="quickCaptureHint">生活の中で必要なことを登録。完了した行動がキャラクターの成長につながります。</small></div><div id="milestonePanel" class="panel milestone-panel" aria-live="polite"><div id="milestoneTitle" class="milestone-title"></div><p id="milestoneDescription" class="milestone-sub"></p><div id="todaySummary" class="today-summary"></div></div><div id="welcome" class="panel" hidden><h2>ようこそ、人生はRPGへ</h2><p>やりたいことを記録し、小さなQuestとして試してみましょう。完了した経験はEXPとして蓄積されます。表示名は任意、登録は不要です。記録はこの端末のブラウザに保存されます。定期的にHelpからバックアップしてください。</p><div class="starter-panel"><h3>まずは1つ、今日の小さなQuestを選ぼう</h3><p>選んだQuestが自分の冒険に追加されます。達成は後からでOK。不要なら編集・非表示にできます。</p><div id="starterChoices" class="starter-choices"></div><small>例から選ばず、自分で作成しても構いません。</small></div><div class="actions"><button id="welcomeWant">WantToDoから始める</button><button id="welcomeQuest" class="secondary">Questから始める</button><button id="welcomeSkip" class="secondary">後で</button></div></div><div class="panel" id="nextStepPanel"><h2>今日の一歩</h2><p>大きな目標より、今できる小さな行動を選ぼう。</p><div id="nextStep"></div></div><div class="panel"><h2>今日のDaily Quest</h2><p id="dailyQuestSummary" class="quick-quest-meta" role="status" aria-live="polite"></p><div id="dailyProgress" class="daily-progress" role="progressbar" aria-label="今日のDaily Quest達成率" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="dailyProgressFill" class="daily-progress-fill"></div></div><div id="todayQuests"></div></div><div class="panel" id="homeRpgPanel"><h3>達成した行動がキャラクターを育てる</h3><p id="homeRpgProgress" aria-live="polite"></p><p id="homeRpgPath"></p><div id="homeRpgGoal" class="achievement-list"></div><div class="actions"><button type="button" id="homeRpgCollection">コレクション・職業を見る</button><button type="button" id="homeRpgQuest" class="secondary">Questに挑戦</button></div></div><details class="panel weekly-panel home-insights"><summary>最近7日間の冒険を見る</summary><p class="journey-caption">積み重ねた一歩を振り返ろう。休んだ日も冒険の一部です。</p><div id="weeklyActivity" class="weekly-activity" aria-label="最近7日間のQuest達成数"></div><p id="weeklySummary" class="quick-quest-meta"></p></details><details class="panel home-insights" id="skillSuggestionsPanel"><summary>スキルを育てる次の一歩を見る</summary><p class="journey-caption">未完了Questから、今取り組める候補を提案します。強制や減点はありません。</p><div id="skillSuggestions"></div></details><details class="panel home-optional"><summary>今日のコンディションを記録（任意）</summary><div class="panel"><p>今日はどんな状態？ 自分の感覚で記録しよう。</p><label>HP（主観的な元気さ）<select id="hp"><option value="">未入力</option><option value="1">20</option><option value="2">40</option><option value="3">60</option><option value="4">80</option><option value="5">100</option></select></label><label>MP（主観的な余力）<select id="mp"><option value="">未入力</option><option value="1">20</option><option value="2">40</option><option value="3">60</option><option value="4">80</option><option value="5">100</option></select></label><label>睡眠時間（時間、任意）<input id="sleep" type="number" min="0" max="24" step="0.5" placeholder="例：7.5"></label><button id="saveStatus">今日の状態を保存</button><small>HP/MPは診断結果ではありません。</small></div></details><div class="actions"><button id="openHelp" class="secondary">Help・データ管理</button></div><details class="panel home-optional"><summary>今日の目標をメモ（任意）</summary><div class="panel"><h2>今日のDaily Goals（最大3件）</h2><label>今日の目標（1行に1件）<textarea id="dailyGoals" rows="3" maxlength="600" placeholder="今日大切にしたいこと"></textarea></label><button id="saveGoals">目標を保存</button></div></details></div></section>
+<section id="quest" hidden><h2>Quest</h2><div class="panel"><label>Quest名<input id="questName" maxlength="100" placeholder="小さな一歩を入力"></label><label>種類<select id="questType"><option value="Daily">Daily</option><option value="Season">Season</option><option value="Main">Main</option></select></label><label>難易度<select id="questDifficulty"><option value="easy">Easy</option><option value="normal">Normal</option><option value="hard">Hard</option></select></label><label>育てたいスキル<select id="questSkill"><option>未設定</option><option>学習</option><option>健康</option><option>仕事</option><option>創作</option><option>生活</option><option>人間関係</option><option>挑戦</option></select></label><button id="addQuest">Questを作成</button></div><div class="panel"><label>Quest一覧の種類<select id="questFilter"><option value="all">すべて</option><option value="Daily">Daily</option><option value="Season">Season</option><option value="Main">Main</option></select></label></div><div class="panel"><h3>表示するQuest</h3><div class="quest-filter-row" id="questStatusFilters"><button type="button" data-status-filter="active" aria-pressed="true">未完了</button><button type="button" data-status-filter="all" aria-pressed="false">すべて</button><button type="button" data-status-filter="completed" aria-pressed="false">完了済み</button></div></div><div class="panel"><label>Questを検索<input id="questSearch" type="search" placeholder="名前・詳細・振り返り" autocomplete="off"></label><label>表示順<select id="questSort"><option value="recommended">おすすめ順（進行中・重要度）</option><option value="newest">新しい順</option><option value="deadline">期限が近い順</option><option value="name">名前順</option></select></label><p id="questResultCount" aria-live="polite"></p><button type="button" id="questResetFilters">絞り込みを解除</button></div><div class="panel" id="questList"></div></section>
+<section id="map" hidden><h2>冒険マップ</h2><div class="panel"><p>やりたいことからQuestへ。進み具合を見渡す地図です。</p><small>未達成でも減点はありません。目標を自由に増やしたり、方向転換できます。</small></div><div class="panel"><label for="mapSearch">冒険を探す<input id="mapSearch" type="search" placeholder="目標・カテゴリ・Quest名で検索"></label><label for="mapFilter">表示する冒険<select id="mapFilter"><option value="all">すべて</option><option value="active">進行中・未着手</option><option value="complete">関連Questをすべて達成</option><option value="unstarted">Quest未作成</option></select></label><p id="mapSummary" aria-live="polite"></p></div><div id="adventureMap"></div></section><section id="want" hidden><h2>WantToDo</h2><div class="panel"><label>やってみたいこと<input id="wantTitle" maxlength="100" placeholder="気になることを記録"></label><label>カテゴリ<select id="wantCategory"></select></label><button id="addWant">追加</button></div><div class="panel"><label>WantToDoを探す<input id="wantSearch" type="search" placeholder="キーワードで絞り込み"></label><label>表示<select id="wantFilter"><option value="all">すべて</option><option value="untried">Quest未作成</option><option value="active">進行中のQuestがある</option><option value="achieved">達成したQuestがある</option></select></label></div><div class="panel" id="wantList"></div></section>
+<section id="adventure" hidden><h2>冒険の記録</h2><div class="panel"><h3>冒険の軌跡</h3><p class="journey-caption">積み重ねた経験を振り返ろう。休んだ日を数えて評価することはありません。</p><div id="journeyStats" class="journey-grid"></div><p id="journeyMessage"></p><div class="monthly-review"><h3>今月の冒険を振り返る</h3><p>できたことを確かめ、次の一歩を選ぼう。休んだ日への減点はありません。</p><div id="monthlyReview" aria-live="polite"></div></div></div><p>できたこと、試したことは経験として残る。休んだ日も失敗ではありません。</p><div class="panel"><label>表示する記録<select id="adventureFilter"><option value="all">すべて</option><option value="completed">達成したQuest</option><option value="reflection">振り返りのあるQuest</option></select></label><label>記録を検索<input id="adventureSearch" type="search" placeholder="Quest名・振り返りを検索"></label><div id="adventureList"></div></div></section>
+<section id="character" hidden><h2>Character</h2><div class="panel"><label>表示名（任意）<input id="displayName" maxlength="60" placeholder="あなたの名前"></label><button id="saveName">保存</button><div class="character-hero"><div class="character-avatar" id="characterAvatar" role="img" aria-label="村人のアバター">⚔</div><div class="character-identity"><strong id="characterName">冒険者</strong><span id="characterTitle">まだ称号はありません</span><p id="characterLevel">Level 1</p></div></div><p id="stats"></p><div class="panel avatar-settings"><h3>あなたの分身・村人A</h3><p class="achievement-note">年齢に合う初期の雰囲気を選べます。年齢は保存せず、外見の区分のみ記録します。性別・能力値には影響しません。</p><div class="avatar-controls"><label>外見の年代<select id="avatarAge"><option value="child">子ども</option><option value="teen">少年・少女（13～17歳）</option><option value="young">青年</option><option value="adult">大人</option><option value="senior">シニア</option></select></label><label>髪色<select id="avatarHair"><option value="brown">茶色</option><option value="black">黒</option><option value="gold">金色</option><option value="silver">銀色</option></select></label><label>服の色<select id="avatarOutfit"><option value="olive">草色</option><option value="blue">青</option><option value="red">赤</option><option value="sand">砂色</option></select></label></div><p id="avatarStage" aria-live="polite"></p><p class="achievement-note">最初は素朴な村人。成長すると冒険者の装飾が少しずつ増えます。外見の好みはいつでも変更できます。</p></div><div class="achievement-panel" aria-label="冒険の称号"><h3>冒険の称号</h3><p class="achievement-note">これまでのQuestから自動で獲得します。獲得済みの称号は「装備する」で変更できます。競争や連続ログインの条件はありません。</p><div id="achievementProgress" class="achievement-progress" aria-live="polite"></div><div id="achievementList" class="achievement-list"></div></div><div class="collection-panel panel" id="rpgOverviewPanel"><h3>冒険者コレクション総覧</h3><p class="achievement-note">装備・スキン、称号、職業、姿の記録をまとめて確認。これからの解放を表示します。</p><div id="rpgOverviewSummary" class="achievement-list" aria-live="polite"></div><h4>これからの成長の可能性</h4><div id="rpgOverviewGoals" class="achievement-list"></div></div><div class="collection-panel panel" id="collectionPanel"><h3>冒険の装備・コレクション</h3><p id="collectionSummary" aria-live="polite"></p><div id="collectionList" class="achievement-list"></div><p id="collectionNext" aria-live="polite"></p></div><div class="collection-panel panel" id="professionPanel"><h3>職業・成長ルート</h3><p class="achievement-note">達成したQuestのスキルに応じて、複数の職業が自然に成長します。職業は固定されず、過去の活動も反映します。</p><p id="professionActive" aria-live="polite"></p><div id="professionList" class="achievement-list"></div><p id="professionNext"></p><h4>複合職の成長</h4><div id="hybridProfessionList" class="achievement-list"></div></div><div class="collection-panel panel" id="chroniclePanel"><h3>冒険図鑑・成長の足跡</h3><p class="achievement-note">実際に達成したQuestから記録を作成します。過去の活動と次の収集目標を確認できます。</p><p id="chronicleSummary"></p><div id="chronicleHistory" class="achievement-list"></div><h4>これからの解放</h4><div id="chronicleGoals" class="achievement-list"></div></div><div class="collection-panel panel" id="appearanceAlbumPanel"><h3>冒険者の姿アルバム</h3><p class="achievement-note">外見・装備・歩んできた成長ルートが変化した時の姿を最大40件保存します。過去の姿に戻す場合も、現在解放済みの装備のみ着用できます。</p><p id="appearanceAlbumSummary"></p><div id="appearanceAlbumList" class="achievement-list"></div></div><div id="expProgress" aria-label="次のレベルまでの経験値"><p id="expProgressText"></p><div class="exp-track" role="progressbar" aria-label="次のレベルへの進捗" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="expFill" class="exp-fill"></div></div></div><h3>スキルの成長</h3><p class="achievement-note">Questの達成件数から計算します。過去のQuestにも編集画面からスキルを設定できます。連続ログインによる減点はありません。</p><div id="skillProgress" class="achievement-list"></div><h3>直近6か月のスキル成長</h3><p class="achievement-note">完了日時をもとに集計します。完了取消したQuestは含みません。</p><div id="skillHistory" class="achievement-list"></div><h3>最近の経験</h3><div id="recentExp"></div></div></section>
+<section id="help" hidden><h2>Help・データ管理</h2><button id="backHome" class="secondary">Homeに戻る</button><div class="panel"><h3>使い方</h3><p>WantToDoに興味を記録し、Questにして小さく試しましょう。Questの完了時に任意で振り返りを残せます。Homeでは今日の目標や状態を記録できます。</p><p>アプリは人生の正解を決めません。無理をせず、必要なら身近な人や専門の支援機関に相談してください。緊急時は地域の緊急窓口を利用してください。</p><p class="notice">記録はこのブラウザ内に保存されます。ブラウザデータの削除・端末変更などで消える場合があります。定期的にバックアップしてください。バックアップには個人的な記録が含まれるため、他人と共有しないでください。</p><div class="actions"><button id="export">JSONバックアップを保存</button><button id="importButton" class="secondary">JSONを復元</button><button id="recoverPrevious" type="button" class="secondary">復元前のデータに戻す</button><button id="rawBackup" class="secondary">保存領域の原本を退避</button><input id="importFile" type="file" accept="application/json,.json" hidden></div><hr><button id="erase" class="danger">全データを削除</button></div></section>
+<dialog id="editor" aria-labelledby="editorTitle"><h2 id="editorTitle">編集</h2><form id="editorForm"><div id="editorFields"></div><div class="dialog-actions"><button type="button" id="editorCancel" class="secondary">キャンセル</button><button type="submit">変更を保存</button></div></form></dialog>
+<div id="rewardToast" class="reward-toast" role="dialog" aria-modal="true" aria-labelledby="rewardTitle" aria-describedby="rewardDetail" hidden><div class="reward-spark" aria-hidden="true">✦ ✧ ✦</div><strong id="rewardTitle"></strong><p id="rewardDetail"></p><p id="rewardBonus" class="reward-bonus"></p><div id="rewardNext" class="reward-next" hidden><p id="rewardNextText"></p><button id="rewardNextGo" type="button">次のQuestを見る</button></div><div class="reward-actions"><button id="rewardUndo" type="button" class="secondary" hidden>達成を取り消す</button><button id="rewardCharacter" type="button" class="secondary">成長した姿を見る</button><button id="rewardClose" type="button">今日はここまで</button></div></div>
+<nav aria-label="メインメニュー"><button data-tab="home">Home</button><button data-tab="quest">Quest</button><button data-tab="want">WantToDo</button><button data-tab="map">冒険マップ</button><button data-tab="adventure">冒険記録</button><button data-tab="character">Character</button></nav>
+<script src="./storage.js"></script>
+<script src="./backup-guard.js"></script>
+<script src="./backup-restore.js"></script>
+<script src="./schema.js"></script>
+<script src="./game-core.js"></script>
+<script src="./day-rollover.js"></script>
+<script src="./calendar-guard.js"></script>
+<script src="./quest-input.js"></script>
+<script src="./daily-summary.js"></script>
+<script src="./quest-ledger.js"></script>
+<script src="./android-back.js"></script>
+<script src="./app-resume.js"></script>
+<script src="./rpg-collection.js"></script>
+<script src="./rpg-professions.js"></script>
+<script src="./rpg-avatar-path.js"></script>
+<script src="./rpg-chronicle.js"></script>
+<script src="./rpg-album.js"></script>
+<script src="./rpg-overview.js"></script>
+<script src="./rpg-path-rewards.js"></script>
+<script src="./rpg-goal-action.js"></script><script src="./rpg-growth-feedback.js"></script>
+<script>
+'use strict';
+const SKILLS=['未設定','学習','健康','仕事','創作','生活','人間関係','挑戦'];const KEY='life-rpg-v3';const RECOVERY_KEY='life-rpg-v3-preimport-recovery';const TYPES=['Daily','Season','Main'];const DIFF=['easy','normal','hard'];const CATS=['行きたい','やってみたい','欲しい','学びたい','仕事','成長','人間関係','趣味'];
+const expFor=LifeRpgCore.expFor;
+const empty=()=>({dataVersion:3,profile:{displayName:''},dailyStatuses:{},todayGoals:{},quests:[],wantToDos:[],expTransactions:[],saveInfo:{updatedAt:'',appVersion:'4.8.22-dev'}});
+const el=id=>document.getElementById(id);const uid=()=>crypto.randomUUID();const iso=()=>new Date().toISOString();const date=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+const valid=d=>{if(!d||d.dataVersion!==3||!d.profile||typeof d.profile.displayName!=='string'||(d.profile.equippedTitle!=null&&(typeof d.profile.equippedTitle!=='string'||d.profile.equippedTitle.length>100))||(d.profile.avatar!=null&&(!d.profile.avatar||typeof d.profile.avatar!=='object'||Array.isArray(d.profile.avatar)||!['child','teen','young','adult','senior'].includes(d.profile.avatar.age)||!['brown','black','gold','silver'].includes(d.profile.avatar.hair)||!['olive','blue','red','sand'].includes(d.profile.avatar.outfit)))||(d.profile.equipment!=null&&(!d.profile.equipment||typeof d.profile.equipment!=='object'||Array.isArray(d.profile.equipment)||Object.entries(d.profile.equipment).some(([slot,id])=>!['head','neck','chest','aura'].includes(slot)||typeof id!=='string'||id.length>60)))||!d.dailyStatuses||typeof d.dailyStatuses!=='object'||Array.isArray(d.dailyStatuses)||!d.todayGoals||typeof d.todayGoals!=='object'||Array.isArray(d.todayGoals)||!Array.isArray(d.quests)||!Array.isArray(d.wantToDos)||!Array.isArray(d.expTransactions))return false;
+const datestr=LifeRpgCalendarGuard.day;const ids=new Set(d.quests.map(q=>q?.id));const wants=new Set(d.wantToDos.map(w=>w?.id));
+if(ids.size!==d.quests.length||wants.size!==d.wantToDos.length)return false;
+if(!Object.entries(d.dailyStatuses).every(([day,s])=>datestr(day)&&s&&[null,1,2,3,4,5].includes(s.hp??null)&&[null,1,2,3,4,5].includes(s.mp??null)&&(s.sleepMinutes==null||(Number.isInteger(s.sleepMinutes)&&s.sleepMinutes>=0&&s.sleepMinutes<=1440))))return false;
+if(!Object.entries(d.todayGoals).every(([day,g])=>datestr(day)&&Array.isArray(g)&&g.length<=3&&g.every(x=>typeof x==='string'&&x.length<=200)))return false;
+if(!d.quests.every(q=>q&&typeof q.id==='string'&&q.id.length>0&&typeof q.name==='string'&&q.name.trim().length>=1&&q.name.length<=100&&TYPES.includes(q.type)&&DIFF.includes(q.difficulty)&&(q.skill==null||SKILLS.includes(q.skill))&&['not_started','in_progress','on_hold','completed'].includes(q.status)&&[1,2,3].includes(q.priority??2)&&(q.parentQuestId==null||ids.has(q.parentQuestId))&&(q.sourceWantId==null||wants.has(q.sourceWantId))&&(q.deadline==null||datestr(q.deadline))&&typeof(q.details??'')==='string'&&(q.details??'').length<=2000&&typeof(q.reflection??'')==='string'&&(q.reflection??'').length<=2000))return false;
+for(const q of d.quests){let seen=new Set([q.id]),at=q;while(at.parentQuestId){if(seen.has(at.parentQuestId))return false;seen.add(at.parentQuestId);at=d.quests.find(x=>x.id===at.parentQuestId);if(!at)return false}}
+if(!d.wantToDos.every(w=>w&&typeof w.id==='string'&&typeof w.title==='string'&&w.title.trim().length>0&&w.title.length<=100&&CATS.includes(w.category)&&typeof(w.memo??'')==='string'&&(w.memo??'').length<=2000))return false;
+if(!d.expTransactions.every(t=>t&&typeof t.transactionId==='string'&&t.transactionId.length>0&&ids.has(t.questId)&&Number.isInteger(t.amount)&&['award','reversal'].includes(t.kind)&&(t.kind==='award'?t.amount>0:t.amount<0)))return false;
+if(new Set(d.expTransactions.map(t=>t.transactionId)).size!==d.expTransactions.length)return false;
+if(typeof d.saveInfo!=='object'||!d.saveInfo||typeof d.saveInfo.updatedAt!=='string'||typeof d.saveInfo.appVersion!=='string')return false;
+if(!d.quests.every(q=>typeof q.archived==='boolean'&&LifeRpgCalendarGuard.timestamp(q.createdAt)&&LifeRpgCalendarGuard.timestamp(q.updatedAt)&&(q.completedAt==null||LifeRpgCalendarGuard.timestamp(q.completedAt))&&(q.status==='completed')===(q.completedAt!=null)))return false;
+if(!d.wantToDos.every(w=>typeof w.archived==='boolean'&&LifeRpgCalendarGuard.timestamp(w.createdAt)&&LifeRpgCalendarGuard.timestamp(w.updatedAt)))return false;
+if(!d.expTransactions.every(t=>LifeRpgCalendarGuard.timestamp(t.createdAt)&&(t.relatedTransactionId==null||typeof t.relatedTransactionId==='string')))return false;
+const transactionsByQuest=new Map();for(const t of d.expTransactions){if(!transactionsByQuest.has(t.questId))transactionsByQuest.set(t.questId,[]);transactionsByQuest.get(t.questId).push(t)}
+for(const q of d.quests){let active=null;for(const t of transactionsByQuest.get(q.id)||[]){if(t.kind==='award'){if(active||!Number.isInteger(t.amount)||t.amount<=0)return false;active=t;}else{if(!active||t.amount!==-active.amount||t.relatedTransactionId!==active.transactionId)return false;active=null;}}if((q.status==='completed')!==Boolean(active))return false;if(active&&active.amount!==expFor(q))return false;}
+
+return d.quests.every(q=>{const ts=transactionsByQuest.get(q.id)||[];const sum=ts.reduce((a,t)=>a+t.amount,0);return sum>=0&&(q.status==='completed'?sum>0:sum===0)})};
+let state=empty();let persistent=true;let readOnly=false;let dailyListExpanded=false;function notify(msg){el('message').textContent=msg}function save(){if(readOnly){notify('保存データに異常があります。バックアップを保存するか、正常なJSONを復元してください。');return false}const nextSaveInfo={updatedAt:iso(),appVersion:'4.8.22-dev'};try{const snapshot=JSON.stringify({...state,saveInfo:nextSaveInfo});LifeRpgStorage.write(localStorage,{...state,saveInfo:nextSaveInfo});state.saveInfo=nextSaveInfo;persistent=true;notify('保存しました');return true}catch(e){persistent=false;notify('保存に失敗しました。バックアップを取得してください。');return false}}function update(fn){if(readOnly){notify('データ保護中です。正常なJSONを復元するか、全データ削除を選んでください。');return false}const before=structuredClone(state);const beforeLook=typeof LifeRpgAlbum!=='undefined'?LifeRpgAlbum.appearance(state,level()):null;try{fn();const afterLook=beforeLook?LifeRpgAlbum.appearance(state,level()):null;if(beforeLook&&LifeRpgAlbum.signature(beforeLook)!==LifeRpgAlbum.signature(afterLook)){if(!LifeRpgAlbum.entries(state).length){const old=structuredClone(before);LifeRpgAlbum.capture(old,Math.max(1,beforeLook.level),iso());state.profile.appearanceAlbum=old.profile.appearanceAlbum;}LifeRpgAlbum.capture(state,level(),iso());}if(!valid(state)){state=before;notify('入力内容が不正です。変更は保存されませんでした。');render();return false}const ok=save();if(!ok)state=before;render();if(!ok)notify('保存に失敗しました。変更は反映されていません。Helpからバックアップを保存してください。');return ok}catch(e){state=before;notify('操作に失敗しました：'+e.message);render();return false}}
+// Storage boot boundary (legacy test harness marker follows)
+// try{const raw=localStorage.getItem(KEY)
+try{const raw=LifeRpgStorage.read(localStorage);if(raw){state=LifeRpgStorage.parse(raw,valid)}}catch(e){readOnly=true;notify('保存データを読み込めません。編集を停止しました。JSONの復元か全データ削除を選んでください。')}
+const total=()=>LifeRpgCore.totalExp(state.expTransactions);const level=()=>LifeRpgCore.levelForExp(total());
+const suggestFollowupQuest=LifeRpgCore.suggestFollowupQuest;
+let rewardReturnFocus=null;
+function closeReward(){const toast=el('rewardToast');toast.hidden=true;if(rewardReturnFocus?.isConnected&&!rewardReturnFocus.disabled)rewardReturnFocus.focus();else el('quickCapture').focus();rewardReturnFocus=null}
+function showReward(q,amount,oldLevel,newLevel,growth){
+ rewardReturnFocus=document.activeElement;
+ const toast=el('rewardToast'),up=newLevel>oldLevel;
+ toast.classList.toggle('level-up',up);
+ toast.classList.toggle('hard-clear',!up&&q.difficulty==='hard');
+ el('rewardTitle').textContent=up?'LEVEL UP! Lv '+newLevel:q.difficulty==='hard'?'HARD QUEST CLEAR!':'QUEST CLEAR!';
+ const typeName={Daily:'日々の冒険',Season:'季節の挑戦',Main:'大きな目標'}[q.type];
+ el('rewardDetail').textContent=q.name+' ／ '+typeName+' ／ ＋'+amount+' EXP';
+ const extras=[];
+ if(growth.levelUp)extras.push('Level '+oldLevel+' → '+newLevel+'！ あなたの歩みが力になりました。');
+ if(growth.titles.length)extras.push('新しい称号：'+growth.titles.join('、'));
+ if(growth.items.length)extras.push('装備・スキン解放：'+growth.items.map(i=>i.name).join('、'));
+ if(growth.professions.length)extras.push('新しい成長ルート：'+growth.professions.map(i=>i.name).join('、'));
+ if(growth.promotions.length)extras.push('職業の成長：'+growth.promotions.map(i=>i.name+' '+i.rank).join('、'));
+ if(growth.activeChanged&&growth.active)extras.push('現在の姿：'+growth.active.name);
+ if(!extras.length)extras.push(q.difficulty==='hard'?'難しい挑戦を乗り越えました。':'今日の一歩を記録しました。');
+ el('rewardBonus').textContent=extras.join(' ／ ');
+ const next=suggestFollowupQuest(q,state.quests),nextPanel=el('rewardNext');
+ nextPanel.hidden=!next;
+ if(next){
+  el('rewardNextText').textContent='次の一歩の候補：'+next.name+'（今すぐ始めなくても大丈夫）';
+  el('rewardNextGo').onclick=()=>{closeReward();document.querySelector('[data-tab="quest"]').click();el('questSearch').value=next.name;render();el('questSearch').focus()};
+ }else{el('rewardNextGo').onclick=null;}
+ const undoButton=el('rewardUndo');undoButton.hidden=false;undoButton.disabled=readOnly;
+ undoButton.onclick=()=>{
+  // Re-check the current quest and its active EXP before reversing; no stale reward actions.
+  const current=state.quests.find(x=>x.id===q.id);
+  const active=state.expTransactions.filter(t=>t.questId===q.id).reduce((sum,t)=>sum+t.amount,0);
+  if(readOnly||!current||current.status!=='completed'||active<=0){closeReward();notify('この達成は取り消せません。Quest一覧で状態を確認してください。');return}
+  if(!confirm('「'+current.name+'」の達成を取り消し、'+active+' EXPを差し引きますか？'))return;
+  const ok=undo(q.id);if(ok){closeReward();notify('達成を取り消しました。Questは未着手に戻りました。')}
+ };
+ toast.hidden=false;el('rewardClose').focus();
+}
+el('rewardCharacter').onclick=()=>{closeReward();document.querySelector('[data-tab="character"]').click()};el('rewardClose').onclick=closeReward;document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!el('rewardToast').hidden){e.preventDefault();closeReward()}});
+function complete(id,reflection=''){
+ const q=state.quests.find(q=>q.id===id);if(!q||q.status==='completed')return false;
+ const oldLevel=level(),amount=expFor(q);
+ const beforeGrowth=LifeRpgGrowthFeedback.snapshot(state,oldLevel,earnedAchievements(state.quests));
+ const ok=update(()=>{if(!LifeRpgQuestLedger.complete(state,id,reflection,iso(),uid(),expFor))throw Error('Questを達成できません')});
+ if(ok){const afterGrowth=LifeRpgGrowthFeedback.snapshot(state,level(),earnedAchievements(state.quests));
+  showReward(q,amount,oldLevel,level(),LifeRpgGrowthFeedback.difference(beforeGrowth,afterGrowth));}
+ return ok;
+}
+function undo(id){if(!state.quests.some(q=>q.id===id&&q.status==='completed'))return false;return update(()=>{if(!LifeRpgQuestLedger.undo(state,id,iso(),uid()))throw Error('達成を取り消せません')})}
+function button(label,fn,cls='secondary'){const b=document.createElement('button');b.textContent=label;b.className=cls;b.addEventListener('click',fn);return b}function itemText(parent,text){const p=document.createElement('p');p.textContent=text;parent.append(p)}
+function changeStatus(id,status){if(!['not_started','in_progress','on_hold'].includes(status))return;update(()=>{const q=state.quests.find(x=>x.id===id);if(!q||q.status==='completed')return;q.status=status;q.updatedAt=iso()})}
+function editDialog(title,fields,onSubmit){if(readOnly)return notify('データ保護中です');const dialog=el('editor'),form=el('editorForm'),root=el('editorFields');el('editorTitle').textContent=title;root.replaceChildren();for(const f of fields){const label=document.createElement('label');label.textContent=f.label;let input;if(f.options){input=document.createElement('select');for(const [value,name] of f.options){const opt=document.createElement('option');opt.value=value;opt.textContent=name;input.append(opt)}}else{input=document.createElement(f.multiline?'textarea':'input');if(!f.multiline)input.type=f.type||'text';if(f.maxLength)input.maxLength=f.maxLength;if(f.multiline)input.maxLength=2000;}input.name=f.key;input.value=f.value??'';if(f.required)input.required=true;label.append(input);root.append(label)}form.onsubmit=e=>{e.preventDefault();const v=Object.fromEntries(new FormData(form).entries());try{const result=onSubmit(v);if(result!==true)return;dialog.close()}catch(err){notify('編集できません：'+err.message)}};el('editorCancel').onclick=()=>dialog.close();dialog.showModal()}
+function editQuest(id){const q=state.quests.find(x=>x.id===id);if(!q)return;const parents=state.quests.filter(x=>x.id!==id&&!x.archived&&!descendantOf(x.id,id));editDialog('Questを編集',[{key:'name',label:'Quest名',value:q.name,required:true,maxLength:100},{key:'type',label:'種類',value:q.type,options:TYPES.map(x=>[x,x])},{key:'difficulty',label:'難易度',value:q.difficulty,options:DIFF.map(x=>[x,x])},{key:'skill',label:'育てたいスキル',value:q.skill||'未設定',options:SKILLS.map(x=>[x,x])},{key:'priority',label:'重要度',value:String(q.priority??2),options:[['1','1'],['2','2'],['3','3']]},{key:'details',label:'詳細',value:q.details||'',multiline:true},{key:'deadline',label:'期限',value:q.deadline||'',type:'date'},{key:'parent',label:'親Quest',value:q.parentQuestId||'',options:[['','なし'],...parents.map(x=>[x.id,x.name])]}],v=>{if(!v.name.trim()||v.name.length>100)return notify('Quest名は1～100字です'),false;if(q.status==='completed'&&(v.type!==q.type||v.difficulty!==q.difficulty))return notify('EXP履歴を保護するため完了済みQuestの種類・難易度は変更できません'),false;return update(()=>{const current=state.quests.find(x=>x.id===id);if(!current)throw Error('Questが見つかりません');Object.assign(current,{name:v.name.trim(),type:v.type,difficulty:v.difficulty,skill:v.skill,priority:Number(v.priority),details:v.details,deadline:v.deadline||null,parentQuestId:v.parent||null,updatedAt:iso()})})})}
+function descendantOf(id,ancestor){let q=state.quests.find(x=>x.id===id),seen=new Set();while(q?.parentQuestId&&!seen.has(q.id)){seen.add(q.id);if(q.parentQuestId===ancestor)return true;q=state.quests.find(x=>x.id===q.parentQuestId)}return false}
+function editWant(id){const w=state.wantToDos.find(x=>x.id===id);if(!w)return;editDialog('WantToDoを編集',[{key:'title',label:'やってみたいこと',value:w.title,required:true,maxLength:100},{key:'category',label:'カテゴリ',value:w.category,options:CATS.map(x=>[x,x])},{key:'memo',label:'メモ',value:w.memo||'',multiline:true}],v=>{if(!v.title.trim()||v.title.length>100)return notify('タイトルは1～100字です'),false;return update(()=>{const current=state.wantToDos.find(x=>x.id===id);if(!current)throw Error('WantToDoが見つかりません');Object.assign(current,{title:v.title.trim(),category:v.category,memo:v.memo,updatedAt:iso()})})})}
+let focusedGoalId=null;
+function showGoalOnMap(id){
+ const goal=state.wantToDos.find(w=>w.id===id&&!w.archived);
+ if(!goal)return;
+ focusedGoalId=id;el('mapFilter').value='all';el('mapSearch').value='';
+ document.querySelector('[data-tab="map"]').click();
+ renderAdventureMap();
+}
+function startGoalJourney(id){
+ const goal=state.wantToDos.find(w=>w.id===id&&!w.archived);
+ if(!goal)return;
+ editDialog('目標を最初の一歩に変える',[
+  {key:'name',label:'まず10分でできること',value:'「'+goal.title.slice(0,60)+'」に向けて10分だけ取り組む',required:true,maxLength:100},
+  {key:'skill',label:'育てたいスキル',value:'未設定',options:SKILLS.map(x=>[x,x])}
+ ],v=>{
+  const name=v.name.trim();
+  if(!name||name.length>100)return notify('Quest名は1～100字です'),false;
+  const ok=update(()=>state.quests.push(Object.assign(newQuest(name,'Daily','easy',id),{skill:v.skill})));
+  if(ok)showGoalOnMap(id);
+  return ok;
+ });
+}
+function quickQuestFromWant(id){const w=state.wantToDos.find(x=>x.id===id&&!x.archived);if(!w)return;editDialog('最初の一歩をQuestにする',[{key:'name',label:'今日からできる小さな一歩',value:'「'+w.title.slice(0,60)+'」のために10分だけ調べる',required:true,maxLength:100},{key:'type',label:'Questの種類',value:'Daily',options:TYPES.map(x=>[x,x])},{key:'skill',label:'育てたいスキル',value:'未設定',options:SKILLS.map(x=>[x,x])}],v=>{const name=v.name.trim();if(!name||name.length>100)return notify('Quest名は1～100字です'),false;return update(()=>state.quests.push(Object.assign(newQuest(name,v.type,'easy',w.id),{skill:v.skill})))})}
+function monthlyReviewData(quests,now=new Date()){
+ const month=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+ const completed=quests.filter(q=>q.status==='completed'&&q.completedAt&&LifeRpgCore.localDay(q.completedAt)?.slice(0,7)===month);
+ const bySkill=new Map();
+ for(const q of completed){if(q.skill&&q.skill!=='未設定')bySkill.set(q.skill,(bySkill.get(q.skill)||0)+1)}
+ const strongest=[...bySkill].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'ja'))[0]||null;
+ const reflections=completed.filter(q=>q.reflection?.trim()).length;
+ const pending=quests.filter(q=>!q.archived&&['not_started','in_progress'].includes(q.status));
+ pending.sort((a,b)=>Number(b.status==='in_progress')-Number(a.status==='in_progress')||(b.priority??2)-(a.priority??2)||(a.createdAt||'').localeCompare(b.createdAt||''));
+ return {month,count:completed.length,strongest,reflections,next:pending[0]||null};
+}
+function renderMonthlyReview(){
+ const root=el('monthlyReview');root.replaceChildren();
+ const summary=monthlyReviewData(state.quests);
+ const lines=[`${summary.month.replace('-','年')}月の達成：${summary.count} Quest`,summary.strongest?`特に育ったスキル：${summary.strongest[0]}（${summary.strongest[1]} Quest）`:'スキルを設定すると、成長の方向も振り返れます。',`振り返りを残した達成：${summary.reflections}件`];
+ for(const line of lines)itemText(root,line);
+ if(summary.next){const p=document.createElement('p');p.textContent='次の一歩の候補：'+summary.next.name;root.append(p);root.append(button('このQuestを確認',()=>{document.querySelector('[data-tab="quest"]').click();el('questFilter').value='all';el('questSearch').value=summary.next.name;questStatusFilter='all';document.querySelectorAll('[data-status-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.statusFilter==='all')));render()}));}
+ else itemText(root,'今すぐ取り組むQuestがなくても大丈夫。次の冒険は自分のペースで。');
+}
+function weeklyActivityData(quests,now=new Date()){
+ const base=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+ const days=Array.from({length:7},(_,i)=>{
+  const date=new Date(base);date.setDate(base.getDate()-6+i);
+  return {date:`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`,count:0};
+ });
+ const byDate=new Map(days.map(d=>[d.date,d]));
+ for(const q of quests){
+  if(q.status!=='completed'||!q.completedAt)continue;
+  const completed=new Date(q.completedAt);
+  if(!Number.isFinite(completed.getTime()))continue;
+  const key=`${completed.getFullYear()}-${String(completed.getMonth()+1).padStart(2,'0')}-${String(completed.getDate()).padStart(2,'0')}`;
+  if(byDate.has(key))byDate.get(key).count++;
+ }
+ return days;
+}
+function renderWeeklyActivity(){
+ const root=el('weeklyActivity');root.replaceChildren();
+ const days=weeklyActivityData(state.quests);
+ const max=Math.max(1,...days.map(d=>d.count));
+ const total=days.reduce((n,d)=>n+d.count,0);
+ for(const d of days){
+  const item=document.createElement('div');item.className='weekly-day';
+  const value=document.createElement('strong');value.textContent=String(d.count);
+  const track=document.createElement('div');track.className='weekly-track';
+  const bar=document.createElement('div');bar.className='weekly-bar';bar.style.height=`${Math.round(d.count/max*100)}%`;
+  track.append(bar);
+  const day=document.createElement('span');day.textContent=d.date.slice(5).replace('-','/');
+  item.setAttribute('aria-label',`${d.date}：${d.count} Quest達成`);
+  item.append(value,track,day);root.append(item);
+ }
+ const activeDays=days.filter(d=>d.count>0).length;
+ el('weeklySummary').textContent=total?`この7日間で ${total} Quest達成 ／ 挑戦した日 ${activeDays}日。自分のペースで続けよう。`:'この7日間の達成記録はまだありません。小さな一歩から始めよう。';
+}
+function renderJourney(){
+ const root=el('journeyStats');root.replaceChildren();
+ const completed=state.quests.filter(q=>q.status==='completed');
+ const awardCount=state.expTransactions.filter(t=>t.kind==='award').length;
+ const categories=[['Daily', '日々の一歩'],['Season','続けた挑戦'],['Main','大きな冒険']];
+ const values=[['完了したQuest',completed.length],['挑戦の記録',awardCount],...categories.map(([type,label])=>[label,completed.filter(q=>q.type===type).length])];
+ for(const [label,value] of values){const tile=document.createElement('div');tile.className='journey-tile';const number=document.createElement('strong');number.textContent=String(value);const caption=document.createElement('span');caption.textContent=label;tile.append(number,caption);root.append(tile)}
+ const reflections=state.quests.filter(q=>q.reflection?.trim()).length;
+ el('journeyMessage').textContent=completed.length===0?'最初の一歩から、あなたの冒険が始まります。':`振り返りを残したQuest：${reflections}件。経験の意味は数字だけでは決まりません。`;
+}
+function renderAdventure(){renderJourney();renderMonthlyReview();const root=el('adventureList');root.replaceChildren();const filter=el('adventureFilter').value;const term=el('adventureSearch').value.trim().toLocaleLowerCase();const qs=state.quests.filter(q=>q.status==='completed'||q.reflection?.trim()).filter(q=>filter==='all'||filter==='completed'&&q.status==='completed'||filter==='reflection'&&q.reflection?.trim()).filter(q=>!term||(q.name+' '+(q.reflection||'')).toLocaleLowerCase().includes(term)).sort((a,b)=>(b.completedAt||b.updatedAt).localeCompare(a.completedAt||a.updatedAt));if(!qs.length)itemText(root,'該当する記録はありません。');let lastMonth='';qs.forEach(q=>{const month=(LifeRpgCore.localDay(q.completedAt||q.updatedAt)||'').slice(0,7);if(month!==lastMonth){const heading=document.createElement('h3');heading.className='month-heading';heading.textContent=month.replace('-', '年')+'月';root.append(heading);lastMonth=month}const d=document.createElement('div');d.className='item';const t=q.completedAt||q.updatedAt;itemText(d,`${q.status==='completed'?'★ 達成':'✎ 振り返り'}｜${q.name}｜${LifeRpgCore.localDay(t)||'日付不明'}`);if(q.reflection)itemText(d,q.reflection);if(q.status==='completed'&&q.type==='Daily'&&!q.archived)d.append(button('このQuestにもう一度挑戦',()=>repeatDailyQuest(q.id)));root.append(d)})}
+function repeatDailyQuest(id){
+ const original=state.quests.find(q=>q.id===id);
+ if(!original||original.archived||original.type!=='Daily'||original.status!=='completed')return false;
+ const exists=state.quests.some(q=>!q.archived&&q.type==='Daily'&&q.status!=='completed'&&q.name===original.name&&q.sourceWantId===original.sourceWantId);
+ if(exists){notify('同じ名前・目標の未完了Daily Questが既にあります');return false}
+ const ok=update(()=>{
+  const current=state.quests.find(q=>q.id===id);
+  if(!current||current.status!=='completed')throw Error('元のQuestが見つかりません');
+  const next=newQuest(current.name,'Daily',current.difficulty,current.sourceWantId);
+  next.skill=current.skill;next.details=current.details;next.priority=current.priority;
+  state.quests.push(next);
+ });
+ if(ok){document.querySelector('[data-tab="home"]').click();notify('今日の一歩にQuestを追加しました')}
+ return ok;
+}
+function openQuestCompletion(q){
+ if(readOnly)return notify('保存データ保護中です。Helpから復旧してください。');
+ editDialog('Questを完了',[{key:'reflection',label:'振り返り（任意）：何を試し、何が分かり、次に何を試したい？',value:q.reflection||'',multiline:true}],v=>complete(q.id,v.reflection));
+}
+// Home selection is transient: changing a suggestion never modifies saved quests.
+let homeSelectedQuestId=null;
+function homeQuestCandidates(quests){
+ const rank={in_progress:0,not_started:1};
+ return quests.filter(q=>!q.archived&&q.status!=='completed'&&q.status!=='on_hold')
+  .sort((a,b)=>(rank[a.status]??2)-(rank[b.status]??2)||
+    (a.type==='Daily'?0:1)-(b.type==='Daily'?0:1)||
+    (b.priority??2)-(a.priority??2)||
+    (a.deadline||'9999-12-31').localeCompare(b.deadline||'9999-12-31')||
+    a.createdAt.localeCompare(b.createdAt)||a.id.localeCompare(b.id));
+}
+function renderNextStep(){
+ const root=el('nextStep');root.replaceChildren();
+ const qs=homeQuestCandidates(state.quests);
+ if(qs.length){
+  const q=qs.find(x=>x.id===homeSelectedQuestId)||qs[0];
+  if(!q){itemText(root,'現在取り組めるQuestはありません。保留中のQuestはQuest一覧から再開できます。');root.append(button('Quest一覧',()=>document.querySelector('[data-tab="quest"]').click()));return}
+  const box=document.createElement('div');box.className='quick-quest';
+  const title=document.createElement('div');title.className='quick-quest-title';title.textContent=q.name;
+  const meta=document.createElement('p');meta.className='quick-quest-meta';meta.textContent=`${q.type} ／ ${q.status==='on_hold'?'保留中':q.status==='in_progress'?'進行中':'未着手'} ／ 完了で +${expFor(q)} EXP`;
+  const actions=document.createElement('div');actions.className='actions';
+  if(q.status!=='in_progress')actions.append(button('開始する',()=>changeStatus(q.id,'in_progress')));
+  actions.append(button('すぐ達成 ＋'+expFor(q)+' EXP',()=>complete(q.id,q.reflection||'')));actions.append(button('振り返って達成',()=>openQuestCompletion(q)));
+  actions.append(button('Quest一覧',()=>{document.querySelector('[data-tab="quest"]').click();el('questFilter').value=q.type;render()}));
+  box.append(title,meta,actions);root.append(box);
+  if(qs.length>1){
+   const choices=document.createElement('div');choices.className='home-quest-choices';
+   const heading=document.createElement('p');heading.className='quick-quest-meta';heading.textContent='他の一歩を選ぶ（保存データは変更しません）';choices.append(heading);
+   qs.slice(0,5).forEach(candidate=>{
+    const pick=button(candidate.name,()=>{homeSelectedQuestId=candidate.id;renderNextStep()});
+    pick.className='home-quest-choice';pick.setAttribute('aria-pressed',String(candidate.id===q.id));
+    if(candidate.id===q.id)pick.disabled=true;
+    choices.append(pick);
+   });
+   root.append(choices);
+  }
+  return;
+ }
+ const held=state.quests.some(q=>!q.archived&&q.status==='on_hold');
+ if(held){itemText(root,'Questはすべて保留中です。再開したいときはQuest一覧から変更できます。');root.append(button('Quest一覧を開く',()=>document.querySelector('[data-tab="quest"]').click()));return}
+ const w=state.wantToDos.find(x=>!x.archived);
+ if(w){itemText(root,'「'+w.title+'」から最初の一歩を作ってみよう');root.append(button('最初の10分Questを作る',()=>startGoalJourney(w.id)));return}
+ itemText(root,'興味のあることを一つ書いてみよう。');root.append(button('WantToDoを記録',()=>document.querySelector('[data-tab="want"]').click()));
+}
+let questStatusFilter='active';
+function setQuestStatusFilter(value){questStatusFilter=value;document.querySelectorAll('[data-status-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.statusFilter===value)));render()}
+document.querySelectorAll('[data-status-filter]').forEach(b=>b.onclick=()=>setQuestStatusFilter(b.dataset.statusFilter));
+
+
+// 称号は保存データに書き込まず、Questの現在の達成状況から導出する。
+// 完了取消時は条件を満たさなくなれば未獲得に戻る。過去のEXP取引は変更しない。
+function achievementMetrics(quests){
+ const completed=quests.filter(q=>q.status==='completed');
+ return {all:completed.length,daily:completed.filter(q=>q.type==='Daily').length,season:completed.filter(q=>q.type==='Season').length,main:completed.filter(q=>q.type==='Main').length,reflection:completed.filter(q=>q.reflection?.trim()).length};
+}
+function earnedAchievements(quests){
+ const m=achievementMetrics(quests);
+ return [
+  {name:'はじまりの一歩',description:'Questを1件達成',current:m.all,target:1},
+  {name:'小さな冒険家',description:'Questを5件達成',current:m.all,target:5},
+  {name:'歩みを重ねる者',description:'Questを25件達成',current:m.all,target:25},
+  {name:'日々の探検者',description:'Daily Questを5件達成',current:m.daily,target:5},
+  {name:'季節を越える者',description:'Season Questを1件達成',current:m.season,target:1},
+  {name:'大きな一歩',description:'Main Questを1件達成',current:m.main,target:1},
+  {name:'経験を語る者',description:'完了したQuestに振り返りを3件記録',current:m.reflection,target:3}
+ ].map(a=>({...a,earned:a.current>=a.target})).concat(LifeRpgPathRewards.achievements(quests));
+}
+function displayedTitle(profile,achievements){
+ const earned=achievements.filter(a=>a.earned);
+ if(!earned.length)return null;
+ return earned.find(a=>a.name===profile.equippedTitle)?.name||earned.at(-1).name;
+}
+function equipTitle(name){
+ const a=earnedAchievements(state.quests).find(a=>a.name===name&&a.earned);
+ if(!a){notify('未獲得の称号は装備できません。');return false}
+ return update(()=>{state.profile.equippedTitle=name});
+}
+function renderAchievements(){
+ const achievements=earnedAchievements(state.quests);
+ const earned=achievements.filter(a=>a.earned);
+ const upcoming=achievements.filter(a=>!a.earned).sort((a,b)=>(b.current/b.target)-(a.current/a.target)||a.target-b.target)[0];
+ el('characterName').textContent=state.profile.displayName.trim()||'名もなき冒険者';
+ el('characterTitle').textContent=earned.length?'称号：'+displayedTitle(state.profile,achievements):'まだ称号はありません';
+ el('characterLevel').textContent='Level '+level()+' ／ '+total()+' EXP';
+ const progress=el('achievementProgress');progress.replaceChildren();
+ const summary=document.createElement('strong');summary.textContent='獲得した称号 '+earned.length+' / '+achievements.length;
+ progress.append(summary);
+ if(upcoming){const note=document.createElement('p');note.textContent='次の称号「'+upcoming.name+'」まであと'+(upcoming.target-upcoming.current)+'件';progress.append(note)}
+ const root=el('achievementList');root.replaceChildren();
+ for(const a of achievements){
+  const card=document.createElement('div');card.className='achievement-card'+(a.earned?'':' locked');
+  const title=document.createElement('strong');title.textContent=(a.earned?'✦ ':'◇ ')+a.name;
+  const detail=document.createElement('span');detail.textContent=a.description+' ／ '+(a.earned?'獲得済み':'未獲得');card.append(title,detail);
+  if(!a.earned){
+   const counter=document.createElement('span');counter.className='progress-label';counter.textContent=a.current+' / '+a.target+' 件';
+   const track=document.createElement('div');track.className='mini-track';track.setAttribute('role','progressbar');track.setAttribute('aria-label',a.name+'の獲得進捗');track.setAttribute('aria-valuemin','0');track.setAttribute('aria-valuemax',String(a.target));track.setAttribute('aria-valuenow',String(Math.min(a.current,a.target)));
+   const fill=document.createElement('div');fill.className='mini-fill';fill.style.width=Math.min(100,Math.round(a.current/a.target*100))+'%';track.append(fill);card.append(counter,track);
+  }
+  if(a.earned){
+   const equipped=displayedTitle(state.profile,achievements)===a.name;
+   const action=button(equipped?'装備中':'装備する',()=>equipTitle(a.name));
+   action.classList.add('secondary');action.disabled=equipped;
+   action.setAttribute('aria-label',a.name+(equipped?'を装備中':'を装備する'));
+   card.append(action);
+  }
+  root.append(card);
+ }
+}
+
+function renderMilestone(){
+ const done=state.quests.filter(q=>q.status==='completed');
+ const n=done.length;const milestones=[1,5,10,25,50,100,250,500];
+ const reached=milestones.filter(x=>x<=n).at(-1)||0;
+ const next=milestones.find(x=>x>n);
+ el('milestoneTitle').textContent=reached?`✦ 冒険の節目：${reached} Quest達成`:'✦ 冒険は最初の一歩から';
+ el('milestoneDescription').textContent=next?`次の節目まであと${next-n} Quest。自分のペースで進もう。`:'これまでのすべての一歩が、あなたの経験です。';
+ const today=date();const todayDone=done.filter(q=>q.completedAt&&LifeRpgCore.localDay(q.completedAt)===today).length;
+ const root=el('todaySummary');root.replaceChildren();
+ for(const text of [`今日の達成 ${todayDone}件`,`これまでの達成 ${n}件`,`現在 Level ${level()}`]){const chip=document.createElement('span');chip.textContent=text;root.append(chip)}
+}
+function renderSkills(){
+ const root=el('skillProgress');root.replaceChildren();
+ const done=state.quests.filter(q=>q.status==='completed'&&SKILLS.includes(q.skill)&&q.skill!=='未設定');
+ const counts=SKILLS.slice(1).map(name=>({name,count:done.filter(q=>q.skill===name).length}));
+ if(!done.length)itemText(root,'スキルを設定したQuestを達成すると、ここに成長が表示されます。');
+ counts.forEach(({name,count})=>{const row=document.createElement('div');row.className='achievement-item';const {level,next,remaining,percent:pct}=LifeRpgCore.skillProgress(count);const label=document.createElement('strong');label.textContent=name+' Lv '+level+' ／ 達成 '+count+'件';const note=document.createElement('p');note.textContent='次のスキルLvまで '+remaining+'件';const bar=document.createElement('div');bar.className='exp-track';bar.setAttribute('role','progressbar');bar.setAttribute('aria-label',name+'の成長');bar.setAttribute('aria-valuemin','0');bar.setAttribute('aria-valuemax','100');bar.setAttribute('aria-valuenow',String(pct));const fill=document.createElement('div');fill.className='exp-fill';fill.style.width=pct+'%';bar.append(fill);row.append(label,bar,note);root.append(row)});
+}
+function renderSkillHistory(){
+ const root=el('skillHistory');root.replaceChildren();
+ const now=new Date(),months=[];
+ for(let i=5;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);months.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`)}
+ const done=state.quests.filter(q=>q.status==='completed'&&q.completedAt&&SKILLS.includes(q.skill)&&q.skill!=='未設定');
+ for(const month of months){
+  const matching=done.filter(q=>LifeRpgCore.localDay(q.completedAt)?.slice(0,7)===month);
+  const row=document.createElement('div');row.className='achievement-item';
+  const heading=document.createElement('strong');heading.textContent=month+'：'+matching.length+'件';row.append(heading);
+  const counts=SKILLS.slice(1).map(skill=>({skill,n:matching.filter(q=>q.skill===skill).length})).filter(x=>x.n);
+  const summary=document.createElement('p');summary.textContent=counts.length?counts.map(x=>x.skill+' '+x.n+'件').join(' ／ '):'記録なし';row.append(summary);root.append(row);
+ }
+}
+function renderSkillSuggestions(){
+ const root=el('skillSuggestions');root.replaceChildren();
+ const done=state.quests.filter(q=>q.status==='completed');
+ const counts=new Map(SKILLS.slice(1).map(skill=>[skill,done.filter(q=>q.skill===skill).length]));
+ const candidates=state.quests.filter(q=>!q.archived&&q.status!=='completed'&&q.status!=='on_hold'&&SKILLS.includes(q.skill)&&q.skill!=='未設定');
+ candidates.sort((a,b)=>(a.status==='in_progress'?-1:0)-(b.status==='in_progress'?-1:0)||(counts.get(a.skill)-counts.get(b.skill))||(b.priority??2)-(a.priority??2)||(a.deadline||'9999-12-31').localeCompare(b.deadline||'9999-12-31'));
+ if(!candidates.length){itemText(root,'スキルを設定した未完了Questがありません。Questの編集画面からスキルを設定できます。');return}
+ for(const q of candidates.slice(0,3)){
+  const row=document.createElement('div');row.className='item';
+  itemText(row,q.name+' ／ '+q.skill+' ／ '+(q.status==='in_progress'?'進行中':'未着手'));
+  const actions=document.createElement('div');actions.className='actions';
+  actions.append(button('Questを確認',()=>{el('questSearch').value=q.name;el('questFilter').value='all';questStatusFilter='all';document.querySelectorAll('[data-status-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.statusFilter==='all')));document.querySelector('[data-tab="quest"]').click();render()}));
+  row.append(actions);root.append(row);
+ }
+}
+// Questの新規作成・再挑戦後に、既存の検索/フィルターに隠されないよう一覧へ誘導する。
+function revealQuest(q){
+ el('questFilter').value='all';
+ el('questSearch').value=q.name;
+ el('questSort').value='newest';
+ questStatusFilter='all';
+ document.querySelectorAll('[data-status-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.statusFilter==='all')));
+ document.querySelector('[data-tab="quest"]').click();
+ render();
+ notify('Quest一覧に「'+q.name+'」を表示しました。');
+}
+function openMappedQuest(q){
+ el('questSearch').value=q.name;el('questFilter').value='all';questStatusFilter='all';
+ document.querySelectorAll('[data-status-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.statusFilter==='all')));
+ document.querySelector('[data-tab="quest"]').click();render();
+}
+function renderAdventureMap(){
+ const root=el('adventureMap');root.replaceChildren();
+ const activeWants=state.wantToDos.filter(w=>!w.archived);
+ const questsByGoal=new Map();
+ for(const q of state.quests){if(q.archived||!q.sourceWantId)continue;
+  if(!questsByGoal.has(q.sourceWantId))questsByGoal.set(q.sourceWantId,[]);
+  questsByGoal.get(q.sourceWantId).push(q);
+ }
+ const linked=w=>questsByGoal.get(w.id)||[];
+ const mode=el('mapFilter').value;
+ const search=el('mapSearch').value.trim().toLocaleLowerCase();
+ const wants=activeWants.filter(w=>{
+  const qs=linked(w),done=qs.filter(q=>q.status==='completed').length;
+  const statusMatch=mode==='all'||mode==='active'&&qs.length>done||mode==='complete'&&qs.length>0&&qs.length===done||mode==='unstarted'&&!qs.length;
+  const text=[w.title,w.category,w.memo||'',...qs.map(q=>q.name)].join(' ').toLocaleLowerCase();
+  return statusMatch&&(!focusedGoalId||w.id===focusedGoalId)&&(!search||text.includes(search));
+ });
+ const allLinked=activeWants.flatMap(linked);
+ el('mapSummary').textContent=`目標 ${activeWants.length}件 ／ 表示 ${wants.length}件 ／ 関連Quest達成 ${allLinked.filter(q=>q.status==='completed').length} / ${allLinked.length}件`;
+ if(focusedGoalId){root.append(button('← すべての冒険を見る',()=>{focusedGoalId=null;renderAdventureMap()}));}
+ if(!wants.length){const empty=document.createElement('div');empty.className='panel';itemText(empty,activeWants.length?'この条件に合う冒険はありません。検索語や表示条件を変更してください。':'WantToDoにやってみたいことを登録すると、冒険ルートが現れます。');
+  if(!activeWants.length)empty.append(button('目標を作って冒険を始める',()=>{document.querySelector('[data-tab="want"]').click();el('wantTitle').focus()}));root.append(empty);}
+ for(const w of wants){
+  const qs=linked(w);const done=qs.filter(q=>q.status==='completed').length;
+  const ordered=[...qs].sort((a,b)=>Number(a.status==='completed')-Number(b.status==='completed')||Number(b.status==='in_progress')-Number(a.status==='in_progress')||(a.createdAt||'').localeCompare(b.createdAt||''));
+  const panel=document.createElement('div');panel.className='panel map-goal';
+  const heading=document.createElement('h3');heading.textContent='🏁 '+w.title;panel.append(heading);
+  itemText(panel,w.category+' ／ '+(qs.length?`${done} / ${qs.length} Quest達成`:'まだQuestがありません'));
+  const bar=document.createElement('progress');bar.max=Math.max(1,qs.length);bar.value=done;bar.setAttribute('aria-label',w.title+'のQuest達成率');bar.style.width='100%';panel.append(bar);
+  const path=document.createElement('ol');path.className='map-path';path.setAttribute('aria-label',w.title+'の冒険ルート');
+  for(const [i,q] of ordered.entries()){
+   const node=document.createElement('li');node.className='map-node map-node-'+q.status;
+   const marker=document.createElement('span');marker.className='map-marker';marker.setAttribute('aria-hidden','true');
+   marker.textContent=q.status==='completed'?'★':String(i+1);node.append(marker);
+   const label=document.createElement('span');label.className='map-label';
+   const status=q.status==='completed'?'達成':q.status==='in_progress'?'進行中':q.status==='on_hold'?'保留':'未着手';
+   label.textContent=q.name+'（'+status+'）';node.append(label);
+   node.append(button('確認',()=>openMappedQuest(q)));path.append(node);
+  }
+  if(!qs.length){const node=document.createElement('li');node.className='map-empty';node.textContent='この目標を叶えるために、まず10分でできることをQuestにしよう';path.append(node)}
+  panel.append(path);
+  const milestone=document.createElement('p');milestone.className='map-milestone';
+  milestone.textContent=qs.length&&done===qs.length?'🏆 このルートの全Questを達成！':qs.length?'次の達成地点まで '+(qs.length-done)+' Quest':'Questを追加して冒険を始めよう';
+  panel.append(milestone);
+  const next=ordered.find(q=>q.status==='in_progress')||ordered.find(q=>q.status==='not_started');
+  if(!next&&qs.length&&done<qs.length)itemText(panel,'未達成のQuestはすべて保留中です。必要になったら再開できます。');
+  if(next){const nextBox=document.createElement('div');nextBox.className='map-next';itemText(nextBox,'次の一歩：'+next.name);nextBox.append(button('このQuestへ',()=>openMappedQuest(next)));panel.append(nextBox)}
+
+  panel.append(button(qs.length?'小さな一歩を追加':'最初の10分Questを作る',()=>qs.length?quickQuestFromWant(w.id):startGoalJourney(w.id)));root.append(panel);
+ }
+ const activeWantIds=new Set(activeWants.map(w=>w.id));
+ const other=state.quests.filter(q=>!q.archived&&(!q.sourceWantId||!activeWantIds.has(q.sourceWantId)));
+ if(mode==='all'&&!search&&!focusedGoalId&&other.length){const panel=document.createElement('div');panel.className='panel';const heading=document.createElement('h3');heading.textContent='🧭 自由な冒険';panel.append(heading);
+  itemText(panel,'目標に紐付かないQuest：'+other.length+'件 ／ 達成：'+other.filter(q=>q.status==='completed').length+'件');
+  panel.append(button('Questを開く',()=>document.querySelector('[data-tab="quest"]').click()));root.append(panel)}
+}
+const AVATAR_AGES=['child','teen','young','adult','senior'];
+const AVATAR_HAIR={brown:'#68452f',black:'#242634',gold:'#d5aa55',silver:'#aab8c7'};
+const AVATAR_OUTFIT={olive:'#72845c',blue:'#507a9d',red:'#a75e54',sand:'#ae9572'};
+function avatarSettings(profile){const a=profile.avatar||{};return {age:AVATAR_AGES.includes(a.age)?a.age:'young',hair:Object.hasOwn(AVATAR_HAIR,a.hair)?a.hair:'brown',outfit:Object.hasOwn(AVATAR_OUTFIT,a.outfit)?a.outfit:'olive'}}
+function avatarStage(lv){return lv>=30?3:lv>=15?2:lv>=5?1:0}
+function avatarSvg(settings,lv,identity,journeyData){
+ const stage=avatarStage(lv),skin='#efc49e',hair=AVATAR_HAIR[settings.hair],coat=AVATAR_OUTFIT[settings.outfit];
+ const headY=settings.age==='child'?37:settings.age==='teen'?34:settings.age==='senior'?30:32;
+ const faceH=settings.age==='child'?27:settings.age==='teen'?29:settings.age==='senior'?32:31;
+ const shoulders=settings.age==='child'?23:settings.age==='teen'?26:settings.age==='adult'?34:30;
+ const cape=stage>=2?'<path d="M34 73 Q15 96 20 136 L80 136 Q85 95 66 73" fill="#48516c"/>':'';
+ const trim=stage>=1?'<path d="M31 83 L50 98 L69 83" fill="none" stroke="#e5c278" stroke-width="3"/>':'';
+ const badge=stage>=2?'<circle cx="65" cy="102" r="6" fill="#e5c278"/><path d="M65 98 L67 102 L65 106 L63 102Z" fill="#57647a"/>':'';
+ const crest=stage>=3?'<path d="M44 80 L50 74 L56 80 L50 90Z" fill="#f3d38b"/>':'';
+ return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 150" role="presentation" focusable="false" aria-hidden="true"><ellipse cx="50" cy="143" rx="32" ry="5" fill="#293348" opacity=".4"/>${cape}<path d="M${50-shoulders} 86 Q50 68 ${50+shoulders} 86 L76 138 L24 138Z" fill="${coat}" stroke="#354154" stroke-width="2"/><path d="M41 79 L50 94 L59 79" fill="#e9d8ba"/><rect x="44" y="64" width="12" height="19" rx="5" fill="${skin}"/><ellipse cx="50" cy="${headY+faceH/2}" rx="21" ry="${faceH}" fill="${skin}"/><path d="M29 ${headY+12} Q22 ${headY-13} 50 ${headY-9} Q78 ${headY-13} 71 ${headY+12} Q61 ${headY+1} 55 ${headY+3} Q41 ${headY+13} 29 ${headY+12}Z" fill="${hair}"/><circle cx="42" cy="${headY+faceH/2+4}" r="2" fill="#39313b"/><circle cx="58" cy="${headY+faceH/2+4}" r="2" fill="#39313b"/><path d="M46 ${headY+faceH/2+16} Q50 ${headY+faceH/2+19} 54 ${headY+faceH/2+16}" stroke="#a36b5c" fill="none" stroke-width="1.5"/>${trim}${badge}${crest}${typeof LifeRpgAvatarPath!=='undefined'?LifeRpgAvatarPath.layers(identity):''}${typeof LifeRpgAvatarPath!=='undefined'?LifeRpgAvatarPath.journeyLayers(journeyData):''}<path d="M26 138 H74" stroke="#d1b084" stroke-width="3"/></svg>`;
+}
+function renderCollection(){
+ const root=el('collectionList');root.replaceChildren();const items=LifeRpgCollection.progress(state,level());
+ const equipped=LifeRpgCollection.equipped(state,level());
+ el('collectionSummary').textContent=`解放済み ${items.filter(i=>i.unlocked).length} / ${items.length} ／ 装備中 ${equipped.length}件`;
+ for(const item of items){const row=document.createElement('div');row.className='item';itemText(row,(item.unlocked?'◆ ':'◇ ')+item.name+'｜'+(item.unlocked?'獲得済み':item.description+'（'+Math.min(item.current,item.need)+' / '+item.need+'）'));
+ if(item.unlocked){const wearing=equipped.some(i=>i.id===item.id);row.append(button(wearing?'装備中':'装備する',()=>update(()=>{if(!LifeRpgCollection.equip(state,item.id,level()))throw Error('未解放の装備です')}),wearing?'secondary':'primary'));}
+ root.append(row);}
+ const next=LifeRpgCollection.nextUnlock(state,level());el('collectionNext').textContent=next?'これからの成長報酬：'+next.name+'｜'+next.description+'（'+Math.min(next.current,next.need)+' / '+next.need+'）':'すべての装備を解放しました！';
+}
+function renderHomeRpg(){
+ const book=LifeRpgOverview.snapshot(state,level(),earnedAchievements(state.quests));
+ const collected=book.categories.filter(c=>c.total!==null).reduce((n,c)=>n+c.unlocked,0);
+ const possible=book.categories.filter(c=>c.total!==null).reduce((n,c)=>n+c.total,0);
+ el('homeRpgProgress').textContent='装備・称号・職業の解放 '+collected+' / '+possible+' ／ 記録した姿 '+(book.categories.find(c=>c.id==='album')?.unlocked||0)+'件';
+ const path=LifeRpgProfessions.active(state);
+ el('homeRpgPath').textContent=path?.name?'これまでの活動を表す姿の一例：'+path.name:'Questを達成すると、あなたの行動に合わせて職業が成長します。';
+ const goal=el('homeRpgGoal');goal.replaceChildren();
+ itemText(goal,'日々のやるべきことをQuestにしよう。装備や称号は、その積み重ねから自然に解放されます。');
+ if(book.goals.length){const next=book.goals[0];itemText(goal,'これから解放される報酬の一例：'+next.kind+'「'+next.name+'」');}
+}
+function renderRpgOverview(){
+ const book=LifeRpgOverview.snapshot(state,level(),earnedAchievements(state.quests));
+ const summary=el('rpgOverviewSummary');summary.replaceChildren();
+ for(const category of book.categories){const row=document.createElement('div');row.className='item';itemText(row,category.name+'：'+category.unlocked+(category.total===null?'件':' / '+category.total));summary.append(row)}
+ const goals=el('rpgOverviewGoals');goals.replaceChildren();
+ itemText(goals,'報酬は、現実で必要なことや挑戦したいことを続けた結果として解放されます。報酬のためにQuestを増やす必要はありません。');
+ if(!book.goals.length){itemText(goals,'現在の解放目標をすべて達成しました。');return;}
+ for(const goal of book.goals){const row=document.createElement('div');row.className='item';itemText(row,goal.kind+'｜'+goal.name+'｜'+(goal.unit==='レベル'?'あと'+goal.remaining+'レベル':'あと'+goal.remaining+'件'));itemText(row,goal.description);goals.append(row)}
+}
+function renderChronicle(){
+ const book=LifeRpgChronicle.snapshot(state,level());
+ el('chronicleSummary').textContent='達成したQuest '+book.quests+'件 ／ 収集済み '+book.unlocked+' / '+book.items+' ／ 成長した職業 '+book.routes.filter(p=>p.unlocked).length+'系統';
+ const history=el('chronicleHistory');history.replaceChildren();
+ if(book.firstQuest)itemText(history,'冒険の始まり：'+book.firstQuest.name+'（'+book.firstQuest.completedAt.slice(0,10)+'）');
+ for(const path of book.routes.filter(p=>p.unlocked)){itemText(history,path.name+'｜'+path.rank+'｜達成 '+path.count+'件');}
+ if(!book.firstQuest)itemText(history,'最初のQuestを達成すると冒険の記録が始まります。');
+ const goals=el('chronicleGoals');goals.replaceChildren();
+ if(!book.next.length)itemText(goals,'現在の目標をすべて達成しました。');
+ for(const goal of book.next)itemText(goals,goal.kind+'：'+goal.name+'｜'+goal.detail+'（あと'+goal.remaining+'件）');
+}
+function renderProfessions(){
+ const paths=LifeRpgProfessions.progress(state),current=LifeRpgProfessions.active(state),next=LifeRpgProfessions.nextGoal(state);
+ const life=LifeRpgProfessions.lifePaths(state);el('professionActive').textContent=life.experienced.length?'歩んできた道：'+life.experienced.map(p=>p.name+' '+p.rank).join('・')+'。すべての分野にいつでも挑戦できます。':'まだ決まった道はありません。どんな活動からでも自由に始められます。';
+ const root=el('professionList');root.replaceChildren();
+ for(const path of paths){const row=document.createElement('div');row.className='achievement-item';const heading=document.createElement('strong');heading.textContent=path.symbol+' '+path.name+'｜'+path.rank;const note=document.createElement('p');note.textContent=path.count+'件達成'+(path.next?' ／ 次の段階まであと'+path.remaining+'件':' ／ 最高段階');row.append(heading,note);root.append(row)}
+ el('professionNext').textContent=life.untouched.length?'未経験の分野もいつでも選べます：'+life.untouched.map(p=>p.name).join('・'):'どの分野も、これからも自由に続けたり方向転換したりできます。';
+ const hybrids=LifeRpgProfessions.hybridProgress(state),hybridRoot=el('hybridProfessionList');hybridRoot.replaceChildren();
+ for(const path of hybrids){const row=document.createElement('div');row.className='achievement-item';const heading=document.createElement('strong');heading.textContent=path.symbol+' '+path.name+'｜'+path.rank;const note=document.createElement('p');note.textContent=path.description+'（各分野 '+path.components.join(' / ')+'件）'+(path.next?' ／ 次の段階まで合計あと'+path.remaining+'件':' ／ 最高段階');row.append(heading,note);hybridRoot.append(row)}
+}
+function renderAvatar(){const settings=avatarSettings(state.profile),lv=level(),stage=avatarStage(lv),avatar=el('characterAvatar');const visualPath=LifeRpgAvatarPath.identity(state,LifeRpgProfessions);const journeyData=LifeRpgAvatarPath.journey(state,LifeRpgProfessions);avatar.innerHTML=avatarSvg(settings,lv,visualPath,journeyData);const equipped=LifeRpgCollection.equipped(state,lv);const svg=avatar.querySelector('svg');if(svg){for(const item of equipped){const ns='http://www.w3.org/2000/svg';const t=document.createElementNS(ns,'text');t.setAttribute('x',item.slot==='head'?'50':item.slot==='neck'?'50':'50');t.setAttribute('y',item.slot==='head'?'24':item.slot==='neck'?'85':item.slot==='aura'?'55':'111');t.setAttribute('font-size',item.slot==='head'?'22':item.slot==='aura'?'30':'17');t.setAttribute('text-anchor','middle');t.setAttribute('fill','#f4d58c');t.setAttribute('stroke','#594a42');t.setAttribute('stroke-width','.45');if(item.slot==='aura'){t.setAttribute('x','83');t.setAttribute('opacity','.85');}t.textContent=item.symbol;svg.append(t);}}const profession=LifeRpgProfessions.activeHybrid(state)||LifeRpgProfessions.active(state);if(svg&&profession){const ns='http://www.w3.org/2000/svg';const mark=document.createElementNS(ns,'text');mark.setAttribute('x','50');mark.setAttribute('y','130');mark.setAttribute('font-size','16');mark.setAttribute('text-anchor','middle');mark.setAttribute('fill','#f4d58c');mark.textContent=profession.symbol;svg.append(mark)}avatar.setAttribute('aria-label',`村人から成長したアバター、レベル${lv}${profession?'、歩んできた道の一例 '+profession.rank+profession.name:''}`);el('avatarAge').value=settings.age;el('avatarHair').value=settings.hair;el('avatarOutfit').value=settings.outfit;el('avatarStage').textContent=['村人A｜素朴な旅支度','旅立ちの村人｜衣装に装飾を獲得','見習い冒険者｜マントと紋章を獲得','熟練の冒険者｜胸元の勲章を獲得'][stage]+'（Lv '+lv+'）'+(visualPath?'｜歩んだ道の紋章：'+journeyData.base.map(p=>p.name).join('・'):'｜行動に応じて外見が分岐します')}
+function renderAppearanceAlbum(){
+ const root=el('appearanceAlbumList');root.replaceChildren();const entries=LifeRpgAlbum.entries(state);
+ el('appearanceAlbumSummary').textContent=entries.length+' / '+LifeRpgAlbum.MAX+'件の姿を記録';
+ if(!entries.length){itemText(root,'外見や装備が変わると、冒険者の姿が記録されます。');return;}
+ for(const entry of entries.slice(-12).reverse()){
+  const row=document.createElement('div');row.className='item';const look=entry.look;
+  itemText(row,entry.at.slice(0,10)+'｜Lv '+look.level+'｜'+look.professionName+'｜成長ルート '+(look.journey||[]).length+'件｜装備 '+look.visibleEquipment.length+'件');
+  row.append(button('この姿を再現',()=>update(()=>{if(!LifeRpgAlbum.restore(state,entry.id,level()))throw Error('姿を復元できません')})));
+  root.append(row);
+ }
+}
+function render(){renderWeeklyActivity();renderAvatar();renderAppearanceAlbum();renderCollection();renderProfessions();renderChronicle();renderRpgOverview();renderHomeRpg();renderMilestone();renderAchievements();const currentExp=total(),currentLevel=level(),nextExp=100*currentLevel*currentLevel,baseExp=100*(currentLevel-1)*(currentLevel-1),pct=Math.max(0,Math.min(100,Math.round((currentExp-baseExp)/(nextExp-baseExp)*100)));el('homeLevel').textContent='Level '+currentLevel;el('homeExp').textContent=currentExp+' EXP';el('homeExpFill').style.width=pct+'%';el('homeExpTrack').setAttribute('aria-valuenow',String(pct));el('homeProgressText').textContent='次のレベルまで '+(nextExp-currentExp)+' EXP';el('questList').replaceChildren();(()=>{const term=el('questSearch').value.trim().toLocaleLowerCase();const sort=el('questSort').value;const shown=state.quests.filter(q=>!q.archived&&(el('questFilter').value==='all'||q.type===el('questFilter').value)&&(questStatusFilter==='all'||(questStatusFilter==='completed'?q.status==='completed':q.status!=='completed'))&&(!term||(q.name+' '+(q.details||'')+' '+(q.reflection||'')).toLocaleLowerCase().includes(term)));const statusRank={in_progress:0,not_started:1,on_hold:2,completed:3};shown.sort((a,b)=>{if(sort==='name')return a.name.localeCompare(b.name,'ja');if(sort==='newest')return b.createdAt.localeCompare(a.createdAt);if(sort==='deadline')return (a.deadline||'9999-12-31').localeCompare(b.deadline||'9999-12-31')||b.createdAt.localeCompare(a.createdAt);return statusRank[a.status]-statusRank[b.status]||(b.priority??2)-(a.priority??2)||(a.deadline||'9999-12-31').localeCompare(b.deadline||'9999-12-31')});el('questResultCount').textContent=shown.length+'件のQuestを表示';if(!shown.length){itemText(el('questList'),'条件に合うQuestはありません。');el('questList').append(button('絞り込みを解除して全件表示',()=>{el('questFilter').value='all';el('questSearch').value='';questStatusFilter='all';document.querySelectorAll('[data-status-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.statusFilter==='all')));render()}));}shown.forEach(q=>{const d=document.createElement('div');d.className='item';const parent=state.quests.find(x=>x.id===q.parentQuestId);itemText(d,`${q.name}｜${q.type}｜${q.difficulty}｜${q.skill||"未設定"}｜重要度${q.priority??2}｜${({not_started:'未着手',in_progress:'進行中',on_hold:'保留',completed:'完了'})[q.status]}`);if(parent)itemText(d,'親Quest：'+parent.name);if(q.details)itemText(d,q.details);if(q.deadline)itemText(d,'期限：'+q.deadline);if(q.reflection)itemText(d,'振り返り：'+q.reflection);const a=document.createElement('div');a.className='actions';a.append(button('編集',()=>editQuest(q.id)));if(q.status==='completed'){if(q.type==='Daily')a.append(button('もう一度挑戦',()=>repeatDailyQuest(q.id)));a.append(button('完了を取り消す',()=>{if(confirm('完了を取り消し、EXPを差し引きますか？'))undo(q.id)}));}else{if(q.status!=='in_progress')a.append(button('開始',()=>changeStatus(q.id,'in_progress')));if(q.status!=='on_hold')a.append(button('保留',()=>changeStatus(q.id,'on_hold')));a.append(button('完了 ＋EXP',()=>openQuestCompletion(q)));}a.append(button('非表示',()=>{if(confirm('このQuestをアーカイブしますか？'))update(()=>{const current=state.quests.find(x=>x.id===q.id);if(!current)throw Error('Questが見つかりません');current.archived=true;current.updatedAt=iso()})}));d.append(a);el('questList').append(d)});})();
+el('wantList').replaceChildren();state.wantToDos.filter(w=>!w.archived).filter(w=>{const term=el('wantSearch').value.trim().toLocaleLowerCase();if(term&&!(w.title+' '+w.category+' '+(w.memo||'')).toLocaleLowerCase().includes(term))return false;const linked=state.quests.filter(q=>q.sourceWantId===w.id&&!q.archived);const mode=el('wantFilter').value;return mode==='all'||mode==='untried'&&linked.length===0||mode==='active'&&linked.some(q=>q.status!=='completed'&&!q.archived)||mode==='achieved'&&linked.some(q=>q.status==='completed')}).forEach(w=>{const d=document.createElement('div');d.className='item';itemText(d,`${w.title}｜${w.category}`);if(w.memo)itemText(d,w.memo);const linked=state.quests.filter(q=>q.sourceWantId===w.id&&!q.archived);const done=linked.filter(q=>q.status==='completed').length;const progress=document.createElement('p');progress.className='linked-progress';progress.textContent=linked.length?`関連Quest：${linked.length}件 ／ 達成：${done}件`:'まだQuestがありません。小さな一歩を作ってみよう。';d.append(progress);const a=document.createElement('div');a.className='actions';a.append(button('編集',()=>editWant(w.id)));a.append(button('冒険マップで見る',()=>showGoalOnMap(w.id)));a.append(button('小さな一歩を作る',()=>quickQuestFromWant(w.id)));a.append(button('Main Questにする',()=>{if(!confirm('この内容からMain Questを作成しますか？'))return;update(()=>state.quests.push(newQuest(w.title,'Main','normal',w.id)))}));a.append(button('非表示',()=>{if(confirm('このWantToDoを非表示にしますか？'))update(()=>{const current=state.wantToDos.find(x=>x.id===w.id);if(!current)throw Error('目標が見つかりません');current.archived=true;current.updatedAt=iso()})}));d.append(a);el('wantList').append(d)});renderAdventure();renderAdventureMap();renderNextStep();
+el('stats').textContent=`累計EXP：${total()} ／ Level：${level()} ／ 完了Quest：${state.quests.filter(q=>q.status==='completed').length}`;const exp=total(),{level:lv,remaining,percent:progress}=LifeRpgCore.levelProgress(exp);el('expProgressText').textContent=`次のLv ${lv+1}まで あと${remaining} EXP`;el('expFill').style.width=progress+'%';el('expProgress').querySelector('[role=progressbar]').setAttribute('aria-valuenow',String(progress));el('recentExp').replaceChildren();const recent=state.expTransactions.slice(-8).reverse();if(!recent.length)itemText(el('recentExp'),'まだ記録はありません');recent.forEach(t=>{const q=state.quests.find(x=>x.id===t.questId);itemText(el('recentExp'),`${q?.name||'Quest'}：${t.amount>0?'+':''}${t.amount} EXP（${t.kind==='award'?'獲得':'取消'}・${t.createdAt.slice(0,10)}）`)});
+el('displayName').value=state.profile.displayName;renderSkills();renderSkillHistory();renderSkillSuggestions();const s=state.dailyStatuses[date()]||{};el('hp').value=s.hp??'';el('mp').value=s.mp??'';el('sleep').value=s.sleepMinutes==null?'':s.sleepMinutes/60;el('dailyGoals').value=(state.todayGoals[date()]||[]).join('\n');el('todayQuests').replaceChildren();const dailyStats=LifeRpgDailySummary.summarize(state.quests,date(),LifeRpgCore.localDay);const todays=dailyStats.pending;const todayCompleted=dailyStats.completed;el('dailyQuestSummary').textContent=`今日の達成 ${todayCompleted}件・残り ${todays.length}件`;const dailyTotal=dailyStats.total;const dailyPercent=dailyStats.percent;el('dailyProgress').hidden=dailyTotal===0;el('dailyProgress').setAttribute('aria-valuenow',String(dailyPercent));el('dailyProgressFill').style.width=dailyPercent+'%';if(!todays.length){const empty=document.createElement('div');empty.className='daily-empty';const message=document.createElement('p');message.textContent=todayCompleted?'今日のDaily Questは完了しました。お疲れさま！':'まだDaily Questがありません。小さな一歩から始めましょう。';const create=button('Questを追加する',()=>{el('quickCapture').focus();el('quickCapture').scrollIntoView({behavior:'smooth',block:'center'})});empty.append(message,create);el('todayQuests').append(empty)}todays.forEach((q,index)=>{const row=document.createElement('div');row.className='daily-item';if(index>=5){row.hidden=!dailyListExpanded;row.dataset.dailyExtra='true';}const title=document.createElement('span');title.textContent=q.name;const actions=document.createElement('div');actions.className='actions';actions.append(button('すぐ達成 ＋'+expFor(q)+' EXP',()=>complete(q.id,q.reflection||'')),button('振り返りを記入',()=>openQuestCompletion(q)));row.append(title,actions);el('todayQuests').append(row)});if(todays.length>5){const more=button(`残り${todays.length-5}件のQuestを表示`,()=>{const extra=el('todayQuests').querySelectorAll('[data-daily-extra]');const expanded=dailyListExpanded;dailyListExpanded=!expanded;extra.forEach(item=>item.hidden=expanded);more.setAttribute('aria-expanded',String(!expanded));more.textContent=expanded?`残り${todays.length-5}件のQuestを表示`:'Questを折りたたむ'});more.classList.add('daily-more');more.setAttribute('aria-expanded',String(dailyListExpanded));more.setAttribute('aria-controls','todayQuests');if(dailyListExpanded)more.textContent='Questを折りたたむ';el('todayQuests').append(more)}document.querySelectorAll('button').forEach(b=>{if(!['export','importButton','erase','rawBackup','openHelp','backHome','welcomeWant','welcomeQuest','welcomeSkip','editorCancel','recoverPrevious'].includes(b.id)&&!b.dataset.tab)b.disabled=readOnly});if(readOnly)notify('保存データ保護中：編集不可。Helpから「保存領域の原本を退避」またはJSON復元を利用してください。')}
+
+function newQuest(name,type,difficulty,sourceWantId=null){return{id:uid(),name,type,status:'not_started',details:'',priority:2,difficulty,deadline:null,parentQuestId:null,sourceWantId,createdAt:iso(),updatedAt:iso(),completedAt:null,reflection:'',skill:'未設定',archived:false}}
+CATS.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;el('wantCategory').append(o)});
+function showMainTab(tab){
+ document.querySelectorAll('section').forEach(s=>s.hidden=s.id!==tab);
+ document.querySelectorAll('nav [data-tab]').forEach(b=>{if(b.dataset.tab===tab)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
+ window.scrollTo(0,0);
+}
+document.querySelectorAll('nav [data-tab]').forEach(b=>b.onclick=()=>showMainTab(b.dataset.tab));
+showMainTab('home');
+// Android hardware/system Back: close overlays first, then return to Home.
+// Capacitor App is optional in a normal browser; no listener is installed there.
+const androidBack=LifeRpgAndroidBack.create({
+ isRewardOpen:()=>!el('rewardToast').hidden,
+ closeReward,
+ isEditorOpen:()=>el('editor').open,
+ closeEditor:()=>el('editor').close(),
+ currentTab:()=>document.querySelector('nav [data-tab][aria-current="page"]')?.dataset.tab||'home',
+ goHome:()=>showMainTab('home'),
+ notify,
+ now:()=>Date.now(),
+ exit:()=>window.Capacitor?.Plugins?.App?.exitApp?.()
+});
+if(window.Capacitor?.isNativePlatform?.()&&window.Capacitor?.Plugins?.App?.addListener){
+ window.Capacitor.Plugins.App.addListener('backButton',()=>androidBack.handle())
+  .catch(()=>notify('Androidの戻るボタン設定を確認できませんでした'));
+}
+el('homeRpgCollection').onclick=()=>showMainTab('character');el('homeRpgQuest').onclick=()=>showMainTab('quest');el('backHome').onclick=()=>document.querySelector('[data-tab=home]').click();el('openHelp').onclick=()=>showMainTab('help');el('questResetFilters').onclick=()=>{el('questFilter').value='all';el('questSearch').value='';questStatusFilter='all';document.querySelectorAll('[data-status-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.statusFilter==='all')));render()};el('questFilter').onchange=render;el('questSearch').oninput=render;el('questSort').onchange=render;el('adventureFilter').onchange=renderAdventure;el('adventureSearch').oninput=renderAdventure;el('wantSearch').oninput=render;el('wantFilter').onchange=render;el('saveGoals').onclick=()=>{const goals=el('dailyGoals').value.split('\n').map(x=>x.trim()).filter(Boolean);if(goals.length>3||goals.some(x=>x.length>200))return notify('今日の目標は最大3件、各200字以内です');update(()=>{state.todayGoals[date()]=goals})};
+el('quickCaptureAdd').onclick=()=>{
+ const input=el('quickCapture'),check=LifeRpgQuestInput.validate(input.value,state.quests);
+ if(!check.ok){notify(check.message);input.focus();return}
+ const q=newQuest(check.name,'Daily','easy');q.skill=el('quickCaptureSkill').value;
+ if(update(()=>state.quests.push(q))){homeSelectedQuestId=q.id;input.value='';renderNextStep();notify('Questを追加しました。「今日の一歩」からすぐ達成できます')}
+};el('quickCapture').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();el('quickCaptureAdd').click()}});
+el('addQuest').onclick=()=>{
+ const input=el('questName'),check=LifeRpgQuestInput.validate(input.value,state.quests);
+ if(!check.ok){notify(check.message);input.focus();return}
+ const q=Object.assign(newQuest(check.name,el('questType').value,el('questDifficulty').value),{skill:el('questSkill').value});
+ if(update(()=>state.quests.push(q))){input.value='';revealQuest(q)}
+};
+el('addWant').onclick=()=>{const n=el('wantTitle').value.trim();if(!n||n.length>100)return notify('やりたいことは1～100字で入力してください');if(update(()=>state.wantToDos.push({id:uid(),title:n,category:el('wantCategory').value,memo:'',createdAt:iso(),updatedAt:iso(),archived:false})))el('wantTitle').value=''};
+el('saveName').onclick=()=>update(()=>{state.profile.displayName=el('displayName').value.trim()});
+for(const id of ['avatarAge','avatarHair','avatarOutfit'])el(id).onchange=()=>{const a={age:el('avatarAge').value,hair:el('avatarHair').value,outfit:el('avatarOutfit').value};update(()=>{state.profile.avatar=a})};
+el('saveStatus').onclick=()=>{const sleep=el('sleep').value;const mins=sleep===''?null:Number(sleep)*60;if(mins!==null&&(!Number.isInteger(mins)||mins<0||mins>1440))return notify('睡眠時間は0〜24時間で入力してください');update(()=>{state.dailyStatuses[date()]={hp:el('hp').value?Number(el('hp').value):null,mp:el('mp').value?Number(el('mp').value):null,sleepMinutes:mins}})};
+// Android WebView may not handle blob: anchor downloads. Prefer the native share sheet when available.
+async function saveBackupFile(contents,filename){
+ const file=new File([contents],filename,{type:'application/json'});
+ if(typeof navigator.share==='function' && typeof navigator.canShare==='function' && navigator.canShare({files:[file]})){
+  try {await navigator.share({files:[file],title:'人生はRPG バックアップ'});return 'shared'}
+  catch(e){if(e && e.name==='AbortError')return 'cancelled'; /* fallback to browser download */}
+ }
+ const url=URL.createObjectURL(file);
+ try {const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();return 'download'}
+ finally {setTimeout(()=>URL.revokeObjectURL(url),10000)}
+}
+async function exportBackup(raw=false){
+ try{
+  if(!raw && readOnly)return notify('保護中のため通常のバックアップは使えません。「保存領域の原本を退避」を使用してください。');
+  const contents=raw?localStorage.getItem(KEY):JSON.stringify(state,null,2);
+  if(contents===null)return notify('保存領域にデータがありません');
+  const filename=raw?`life-rpg-raw-recovery-${date()}.json`:`life-rpg-backup-${date()}.json`;
+  const result=await saveBackupFile(contents,filename);
+  if(result==='shared')notify('バックアップの共有先への送信が完了しました。安全な場所に保存してください。');
+  else if(result==='download')notify('バックアップのダウンロードを開始しました。ファイルが保存されたか確認してください。');
+ }catch(e){notify('バックアップの出力に失敗しました：'+(e?.message||'不明なエラー'))}
+}
+el('export').onclick=()=>exportBackup(false);
+el('rawBackup').onclick=()=>exportBackup(true);
+function replaceSavedState(next){
+ if(!valid(next))throw Error('対応していないデータ形式です');
+ LifeRpgStorage.write(localStorage,next);
+ state=next;readOnly=false;render();
+}
+function preserveBeforeImport(){LifeRpgStorage.preserve(localStorage)}
+el('recoverPrevious').onclick=()=>{
+ try{
+  const raw=LifeRpgStorage.read(localStorage,RECOVERY_KEY);
+  if(!raw)return notify('復元前の退避データはありません');
+  const restored=LifeRpgStorage.parse(raw,valid);
+  if(!confirm('直前のJSON復元前のデータに戻しますか？ 現在のデータは上書きされます。'))return;
+  state=LifeRpgBackupRestore.recover(localStorage,valid);readOnly=false;render();notify('復元前のデータに戻しました');
+  // Keep the original recovery copy for manual export; do not overwrite it.
+ }catch(e){notify('以前のデータを復元できません：'+e.message)}
+};
+el('importButton').onclick=()=>el('importFile').click();el('importFile').onchange=async e=>{const f=e.target.files?.[0];if(!f)return;try{if(f.size>5_000_000)throw Error('ファイルが大きすぎます');const d=LifeRpgBackupGuard.parse(await f.text(),valid);if(!confirm(`Quest ${d.quests.length}件、WantToDo ${d.wantToDos.length}件を復元します。現在のデータは上書きされます。続けますか？`))return;state=LifeRpgBackupRestore.importBackup(localStorage,JSON.stringify(d),valid,{updatedAt:iso(),appVersion:'4.8.22-dev'});readOnly=false;render();notify('復元しました。以前のデータは「復元前のデータに戻す」で保護されています。')}catch(err){notify(`復元できません：${err.message}`)}finally{e.target.value=''}};
+el('erase').onclick=()=>{if(!confirm('全データを削除しますか？ 元に戻せません。'))return;if(!confirm('最終確認：本当にすべての記録を削除しますか？'))return;try{localStorage.removeItem(KEY);localStorage.removeItem(RECOVERY_KEY);localStorage.removeItem('life-rpg-onboarded');state=empty();readOnly=false;render();notify('全データと復元前の退避データを削除しました')}catch(e){notify('削除に失敗しました')}};
+render();
+// A backgrounded PWA may cross midnight without a navigation or user action.
+// Refresh only date-dependent views, never mutate saved progress.
+const dayRollover=LifeRpgDayRollover.create(()=>render());
+const appResume=LifeRpgAppResume.create({now:()=>Date.now(),checkDay:()=>dayRollover.check(),refresh:()=>render()});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)appResume.background();else appResume.resume()});
+window.addEventListener('focus',()=>appResume.resume());
+window.addEventListener('pagehide',()=>appResume.background());
+window.addEventListener('pageshow',()=>appResume.resume());
+// Android app-state events supplement browser visibility events on devices.
+if(window.Capacitor?.isNativePlatform?.()&&window.Capacitor?.Plugins?.App?.addListener){
+ window.Capacitor.Plugins.App.addListener('appStateChange',({isActive})=>{if(isActive)appResume.resume();else appResume.background()})
+  .catch(()=>notify('Androidの復帰監視を設定できませんでした'));
+}
+const dayRefreshTimer=setInterval(()=>{if(!document.hidden)dayRollover.check()},60_000);
+const STARTER_QUESTS=Object.freeze([
+ {name:'本を5分読む',skill:'学習',description:'学びの第一歩'},
+ {name:'5分だけ散歩する',skill:'健康',description:'体を動かす第一歩'},
+ {name:'机の上を1か所片付ける',skill:'生活',description:'暮らしを整える第一歩'}
+]);
+function createStarterQuest(template){
+ if(!STARTER_QUESTS.includes(template))return false;
+ const check=LifeRpgQuestInput.validate(template.name,state.quests);if(!check.ok){notify(check.message);return false}
+ return update(()=>state.quests.push(Object.assign(newQuest(template.name,'Daily','easy'),{skill:template.skill})));
+}
+function setupWelcome(){
+ try{
+  if(localStorage.getItem('life-rpg-onboarded')||state.quests.length||state.wantToDos.length||state.expTransactions.length)return;
+  const welcome=el('welcome');welcome.hidden=false;
+  const finish=tab=>{welcome.hidden=true;try{localStorage.setItem('life-rpg-onboarded','1')}catch(e){}if(tab)document.querySelector(`[data-tab="${tab}"]`).click()};
+  const root=el('starterChoices');root.replaceChildren();
+  for(const template of STARTER_QUESTS){
+   const choice=button(template.name+' — '+template.description,()=>{
+    if(createStarterQuest(template)){const created=state.quests.at(-1);homeSelectedQuestId=created.id;finish('home');renderNextStep();notify('最初のQuestを追加しました。「今日の一歩」から達成できます！')}
+   });
+   root.append(choice);
+  }
+  el('welcomeWant').onclick=()=>finish('want');el('welcomeQuest').onclick=()=>finish('quest');el('welcomeSkip').onclick=()=>finish(null);
+ }catch(e){notify('初回ガイドの表示に失敗しました。通常のQuest作成は利用できます。')}
+}
+setupWelcome();
+if ("serviceWorker" in navigator && location.protocol === "https:") { window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {})); }
+
+el('mapFilter').addEventListener('change',()=>{focusedGoalId=null;render()});el('mapSearch').addEventListener('input',()=>{focusedGoalId=null;render()});
+</script></body></html>
